@@ -11,6 +11,6 @@ const QuoteBackgroundColorSchema = new mongoose.Schema({
     },
 });
 
-const quoteBackgroundColor = mongoose.model('quoteBackgroundColor', QuoteBackgroundColorSchema);
+const QuoteBackgroundColor = mongoose.model('QuoteBackgroundColor', QuoteBackgroundColorSchema);
 
-export default quoteBackgroundColor;
+export default QuoteBackgroundColor;

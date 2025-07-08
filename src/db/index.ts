@@ -1,6 +1,7 @@
-export {default as user} from './models/user.js';
-export {default as diary} from './models/diary.js';
-export {default as tag} from './models/tag.js';
-export {default as mood} from './models/mood.js';
-export {default as quote} from './models/quote.js';
-export {default as quoteBackgroundColor} from './models/quoteBackgroundColor.js';
+export {default as User} from './models/user.js';
+export {default as Diary} from './models/diary.js';
+export {default as Tag} from './models/tag.js';
+export {default as Mood} from './models/mood.js';
+export {default as Quote} from './models/quote.js';
+export {default as QuoteBackgroundColor} from './models/quoteBackgroundColor.js';
+export {default as QuoteBackgroundImage} from './models/quoteBackgroundImage.js';
