@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { connectDB } from './db/connection.js';
 
 const app = express();
 const port: number = 3000;
@@ -18,4 +19,5 @@ app.all('/{*notFound}', (req: express.Request, res: express.Response) => {
 
 app.listen(port, () => {
   console.log(`Hello express app listening on port ${port}`)
+  connectDB();
 });
