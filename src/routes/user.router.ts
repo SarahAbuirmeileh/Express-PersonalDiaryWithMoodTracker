@@ -2,6 +2,7 @@ import express from 'express';
 import { createUser, login } from '../controllers/user.controller.js';
 import { NSUser } from '../@types/user.types.js';
 import { validateUserCreation, validateUserLogin } from '../middlewares/validation/user.js';
+import { COOKIE_MAX_AGE, COOKIE_NAME, COOKIE_SAME_SITE } from '../constants/token.js';
 
 const router = express.Router();
 
@@ -29,10 +30,10 @@ router.post('/signup', validateUserCreation, (req: NSUser.IUserRequest, res: exp
 router.post('/login', validateUserLogin, (req: NSUser.IUserRequest, res: express.Response) => {
   login(req.body.email, req.body.password)
     .then(dataObj => {
-      res.cookie('x-mood-tracker', dataObj.token, {
+      res.cookie(COOKIE_NAME, dataObj.token, {
         httpOnly: true,
-        maxAge: 60 * 24 * 60 * 1000,
-        sameSite: "lax"
+        maxAge: COOKIE_MAX_AGE,
+        sameSite: COOKIE_SAME_SITE
       });
 
       const { password, __v, ...data } = dataObj.user;
@@ -45,7 +46,13 @@ router.post('/login', validateUserLogin, (req: NSUser.IUserRequest, res: express
       console.log("Error in logging in user: ", err.message);
       res.status(500).send("Failed to log in user: " + (err.status === 400 ? err.message : ""));
     });
+});
 
+router.get("/logout", /*authenticate,*/ (req:express.Request, res:express.Response, next:express.NextFunction) => {
+    res.cookie(COOKIE_NAME, '', {
+        maxAge: -1
+    })
+    res.send({message: "You logged out successfully !"});
 });
 
 export default router;
