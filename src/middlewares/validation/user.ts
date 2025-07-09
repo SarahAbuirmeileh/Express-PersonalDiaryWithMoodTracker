@@ -3,7 +3,7 @@ import * as EmailValidator from 'email-validator';
 import { isValidPassword } from '../../utils/validation.js';
 import User from '../../db/models/user.js';
 
-const validateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+const validateUserCreation = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const user = req.body;
     const errorList: string[] = [];
 
@@ -32,6 +32,25 @@ const validateUser = async (req: express.Request, res: express.Response, next: e
     }
 };
 
+const validateUserLogin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const user = req.body;
+    const errorList: string[] = [];
+
+    const requiredFields = ["email", "password"];
+    requiredFields.forEach((field) => {
+        if (!user[field]) {
+            errorList.push(`${field} is required.`);
+        }
+    });
+
+    if (errorList.length) {
+        res.status(400).send({ message: 'User login failed', errors: errorList });
+    } else {
+        next();
+    }
+};
+
 export{
-    validateUser,
+    validateUserCreation,
+    validateUserLogin
 }

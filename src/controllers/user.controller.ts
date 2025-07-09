@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { NSUser } from '../@types/user.types.js';
 import User from '../db/models/user.js';
+import jwt from 'jsonwebtoken';
 
 const createUser = async (payload: NSUser.IUser) => {
     try {
@@ -33,6 +34,41 @@ const createUser = async (payload: NSUser.IUser) => {
     }
 };
 
+const login = async (email: string, password: string) => {
+    let user;
+    try {
+        user = await User.findOne({
+            email
+        }).lean();
+    } catch (err) {
+        const error: any = new Error('Error finding user');
+        error.status = 500;
+        throw error;
+    }
+
+    if (user && user.password) {
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            const error: any = new Error('Invalid email or password');
+            error.status = 400;
+            throw error;
+        }
+        const token = jwt.sign(
+            { email, name: user.name, id: user._id },
+            process.env.SECRET_KEY || '',
+            {
+                expiresIn: "1d"
+            }
+        );
+        return { token, user };
+    } else {
+        const error: any = new Error('No user with this email!');
+        error.status = 400;
+        throw error;
+    }
+}
+
 export {
     createUser,
+    login,
 };
