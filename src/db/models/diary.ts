@@ -40,6 +40,6 @@ const DiarySchema = new Schema({
     }
 });
 
-const Diary = mongoose.model('diary', DiarySchema);
+const Diary = mongoose.model('Diary', DiarySchema);
 
 export default Diary;

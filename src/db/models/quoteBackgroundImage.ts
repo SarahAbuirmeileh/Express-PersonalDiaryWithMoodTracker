@@ -7,6 +7,6 @@ const QuoteBackgroundImageSchema = new mongoose.Schema({
     }
 });
 
-const quoteBackgroundImage = mongoose.model('quoteBackgroundImage', QuoteBackgroundImageSchema);
+const QuoteBackgroundImage = mongoose.model('QuoteBackgroundImage', QuoteBackgroundImageSchema);
 
-export default quoteBackgroundImage;
+export default QuoteBackgroundImage;
