@@ -3,6 +3,7 @@ import { createUser, login } from '../controllers/user.controller.js';
 import { NSUser } from '../@types/user.types.js';
 import { validateUserCreation, validateUserLogin } from '../middlewares/validation/user.js';
 import { COOKIE_MAX_AGE, COOKIE_NAME, COOKIE_SAME_SITE } from '../constants/token.js';
+import { authenticate } from '../middlewares/auth/authenticate.js';
 
 const router = express.Router();
 
@@ -48,7 +49,7 @@ router.post('/login', validateUserLogin, (req: NSUser.IUserRequest, res: express
     });
 });
 
-router.get("/logout", /*authenticate,*/ (req:express.Request, res:express.Response, next:express.NextFunction) => {
+router.get("/logout", authenticate, (req:express.Request, res:express.Response, next:express.NextFunction) => {
     res.cookie(COOKIE_NAME, '', {
         maxAge: -1
     })

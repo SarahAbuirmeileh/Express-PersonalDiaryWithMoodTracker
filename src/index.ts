@@ -2,12 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import { connectDB } from './db/connection.js';
 import userRouter from './routes/user.router.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const port: number = 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/users', userRouter);
 
