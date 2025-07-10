@@ -1,8 +1,9 @@
-import { NSTracker } from '../@types/user.types.js';
 import Tag from '../db/models/tag.js';
 import { CustomError } from '../utils/CustomError.js';
+import { NSTag } from '../@types/tag.type.js';
+import mongoose from 'mongoose';
 
-const createTag = async (payload: NSTracker.ITag) => {
+const createTag = async (payload: NSTag.ITag) => {
     try {
 
         const existingTag = await Tag.findOne({ name: payload.name });
@@ -20,11 +21,38 @@ const createTag = async (payload: NSTracker.ITag) => {
     } catch (err) {
         const error: any = new CustomError('Error creating tag', 500);
         console.error("Error creating tag: ", err);
-        
+
         throw error;
     }
 };
 
-export{
+const updateTag = async (payload: NSTag.IEditTag) => {
+    try {
+        let tag = await Tag.findOne({ _id: payload.id });
+
+        if (tag) {
+            tag.name = payload.name ?? tag.name;
+            tag.emoji = payload.emoji ?? tag.emoji;
+            tag.type = payload.type ?? tag.type;
+            if (tag.user && payload.type === 'global') {
+                const id = new mongoose.Types.ObjectId(tag.user);
+                tag.user = id; 
+            }
+
+            await tag.save();
+
+            const tagData = tag.toObject();
+            return tagData;
+        }
+    } catch (err) {
+        const error = new CustomError('Error updating tag', 500);
+        console.error("Error updating tag: ", err);
+
+        throw error;
+    }
+}
+
+export {
     createTag,
+    updateTag
 }

@@ -1,13 +1,13 @@
 import express from 'express';
 import { createUser, login } from '../controllers/user.controller.js';
-import { NSTracker } from '../@types/user.types.js';
+import { NSUser } from '../@types/user.types.js';
 import { validateUserCreation, validateUserLogin } from '../middlewares/validation/user.js';
 import { COOKIE_MAX_AGE, COOKIE_NAME, COOKIE_SAME_SITE } from '../constants/token.js';
 import { authenticate } from '../middlewares/auth/authenticate.js';
 
 const router = express.Router();
 
-router.post('/signup', validateUserCreation, (req: NSTracker.IUserCreateRequest, res: express.Response) => {
+router.post('/signup', validateUserCreation, (req: NSUser.IUserCreateRequest, res: express.Response) => {
   try {
     createUser(req.body).then(dataObj => {
 
@@ -31,7 +31,7 @@ router.post('/signup', validateUserCreation, (req: NSTracker.IUserCreateRequest,
 
 });
 
-router.post('/login', validateUserLogin, (req: NSTracker.IUserCreateRequest, res: express.Response) => {
+router.post('/login', validateUserLogin, (req: NSUser.IUserCreateRequest, res: express.Response) => {
   login(req.body?.email, req.body?.password)
     .then(dataObj => {
       res.cookie(COOKIE_NAME, dataObj.token, {

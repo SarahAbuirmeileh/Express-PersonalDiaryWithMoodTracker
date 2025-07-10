@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
-import { NSTracker } from '../@types/user.types.js';
+import { NSUser } from '../@types/user.types.js';
 import User from '../db/models/user.js';
 import jwt from 'jsonwebtoken';
 import { CustomError } from '../utils/CustomError.js';
 
-const createUser = async (payload: NSTracker.IUser) => {
+const createUser = async (payload: NSUser.IUser) => {
     try {
         const hashedPassword = await new Promise<string>((resolve, reject) => {
             bcrypt.hash(payload.password, 10, (err, hash) => {
