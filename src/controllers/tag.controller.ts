@@ -56,9 +56,28 @@ const deleteTag = async (tagId: string) => {
     try {
         const tag = await Tag.findOneAndDelete({ _id: tagId });
     } catch (err) {
-        
+
         const error = new CustomError('Error deleting tag', 500);
         console.error("Error deleting tag: ", err);
+
+        throw error;
+    }
+}
+
+const getTagsForUser = async (userId: string) => {
+    try {
+        const tags = await Tag.find({
+            $or: [
+            { type: 'global' },
+            {  user: userId , type: 'custom' }
+            ]
+        });
+        return tags.map(tag => tag.toObject());
+        
+    } catch (err) {
+
+        const error = new CustomError('Error fetching tags for user', 500);
+        console.error("Error fetching tags for user: ", err);   
 
         throw error;
     }
@@ -67,5 +86,6 @@ const deleteTag = async (tagId: string) => {
 export {
     createTag,
     updateTag,
-    deleteTag
+    deleteTag,
+    getTagsForUser
 }

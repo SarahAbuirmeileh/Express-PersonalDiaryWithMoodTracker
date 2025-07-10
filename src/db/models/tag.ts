@@ -18,7 +18,7 @@ const TagSchema = new Schema({
     },
     user: {
         type: Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'User',
         required: function (this: any) {
             return this.type === 'custom';
         },

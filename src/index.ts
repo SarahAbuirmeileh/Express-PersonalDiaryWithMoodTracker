@@ -4,6 +4,7 @@ import { connectDB } from './db/connection.js';
 import userRouter from './routes/user.router.js';
 import tagRouter from './routes/tag.router.js';
 import cookieParser from 'cookie-parser';
+import { authenticate } from './middlewares/auth/authenticate.js';
 
 const app = express();
 const port: number = 3000;
@@ -13,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/users', userRouter);
-app.use('/tags', tagRouter);
+app.use('/tags', authenticate, tagRouter);
 
 app.get('/', (req: express.Request, res: express.Response) => {
   res.status(200).send("Hello world!");
