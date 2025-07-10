@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
-import { NSUser } from '../@types/user.types.js';
+import { NSTracker } from '../@types/user.types.js';
 import User from '../db/models/user.js';
 import jwt from 'jsonwebtoken';
 import { CustomError } from '../utils/CustomError.js';
 
-const createUser = async (payload: NSUser.IUser) => {
+const createUser = async (payload: NSTracker.IUser) => {
     try {
         const hashedPassword = await new Promise<string>((resolve, reject) => {
             bcrypt.hash(payload.password, 10, (err, hash) => {
@@ -28,10 +28,9 @@ const createUser = async (payload: NSUser.IUser) => {
         return userData;
 
     } catch (err) {
-        const error: any = new Error('Error creating user');
+        const error: any = new CustomError('Error creating user', 500);
         console.error("Error creating user: ", err);
-        
-        error.status = 500;
+ 
         throw error;
     }
 };

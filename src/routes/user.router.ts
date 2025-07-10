@@ -1,13 +1,13 @@
 import express from 'express';
 import { createUser, login } from '../controllers/user.controller.js';
-import { NSUser } from '../@types/user.types.js';
+import { NSTracker } from '../@types/user.types.js';
 import { validateUserCreation, validateUserLogin } from '../middlewares/validation/user.js';
 import { COOKIE_MAX_AGE, COOKIE_NAME, COOKIE_SAME_SITE } from '../constants/token.js';
 import { authenticate } from '../middlewares/auth/authenticate.js';
 
 const router = express.Router();
 
-router.post('/signup', validateUserCreation, (req: NSUser.IUserRequest, res: express.Response) => {
+router.post('/signup', validateUserCreation, (req: NSTracker.IUserCreateRequest, res: express.Response) => {
   try {
     createUser(req.body).then(dataObj => {
 
@@ -23,13 +23,16 @@ router.post('/signup', validateUserCreation, (req: NSUser.IUserRequest, res: exp
     });
   } catch (err) {
     console.error("Error in adding user: ", err);
-    res.status(500).send("Failed to add user!");
+    res.status(500).send({
+      message: "Failed to add user",
+      error: "Internal Server Error"
+    });
   }
 
 });
 
-router.post('/login', validateUserLogin, (req: NSUser.IUserRequest, res: express.Response) => {
-  login(req.body.email, req.body.password)
+router.post('/login', validateUserLogin, (req: NSTracker.IUserCreateRequest, res: express.Response) => {
+  login(req.body?.email, req.body?.password)
     .then(dataObj => {
       res.cookie(COOKIE_NAME, dataObj.token, {
         httpOnly: true,
@@ -45,15 +48,18 @@ router.post('/login', validateUserLogin, (req: NSUser.IUserRequest, res: express
     })
     .catch(err => {
       console.error("Error in logging in user: ", err.message);
-      res.status(500).send("Failed to log in user: " + (err.status === 400 ? err.message : ""));
+      res.status(500).send({
+        message: "Failed to log in user",
+        error: (err.status === 400 ? err.message : "Internal Server Error")
+      });
     });
 });
 
-router.get("/logout", authenticate, (req:express.Request, res:express.Response, next:express.NextFunction) => {
-    res.cookie(COOKIE_NAME, '', {
-        maxAge: -1
-    })
-    res.send({message: "You logged out successfully !"});
+router.get("/logout", authenticate, (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  res.cookie(COOKIE_NAME, '', {
+    maxAge: -1
+  })
+  res.send({ message: "You logged out successfully !" });
 });
 
 export default router;

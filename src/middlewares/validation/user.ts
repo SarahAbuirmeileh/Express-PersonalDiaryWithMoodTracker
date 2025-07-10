@@ -4,7 +4,7 @@ import { isValidPassword } from '../../utils/validation.js';
 import User from '../../db/models/user.js';
 
 const validateUserCreation = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const user = req.body;
+    const user = req.body || {};
     const errorList: string[] = [];
 
     const requiredFields = ["name", "email", "password"];
@@ -36,7 +36,7 @@ const validateUserCreation = async (req: express.Request, res: express.Response,
 };
 
 const validateUserLogin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const user = req.body;
+    const user = req.body || {};
     const errorList: string[] = [];
 
     const requiredFields = ["email", "password"];

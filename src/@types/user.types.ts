@@ -1,6 +1,6 @@
 import express from "express";
 
-export namespace NSUser {
+export namespace NSTracker {
 
     export interface IUser {
         name: string;
@@ -9,5 +9,17 @@ export namespace NSUser {
         imageURL?: string;
     }
 
-    export interface IUserRequest extends express.Request<{}, {}, NSUser.IUser, {}> { }
+    export interface IUserCreateRequest extends express.Request<{}, {}, NSTracker.IUser, {}> { }
+    
+    export type tagType = 'global' | 'custom';
+
+    export interface ITag {
+        name: string;
+        emoji: string;
+        type: tagType;
+        user: number;
+    }
+    
+    export interface ITagCreateRequest extends express.Request<{}, {}, ITag, {}> { }
+
 }
