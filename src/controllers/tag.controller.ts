@@ -52,7 +52,20 @@ const updateTag = async (payload: NSTag.IEditTag) => {
     }
 }
 
+const deleteTag = async (tagId: string) => {
+    try {
+        const tag = await Tag.findOneAndDelete({ _id: tagId });
+    } catch (err) {
+        
+        const error = new CustomError('Error deleting tag', 500);
+        console.error("Error deleting tag: ", err);
+
+        throw error;
+    }
+}
+
 export {
     createTag,
-    updateTag
+    updateTag,
+    deleteTag
 }

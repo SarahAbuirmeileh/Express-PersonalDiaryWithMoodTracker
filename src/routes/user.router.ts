@@ -8,26 +8,18 @@ import { authenticate } from '../middlewares/auth/authenticate.js';
 const router = express.Router();
 
 router.post('/signup', validateUserCreation, (req: NSUser.IUserCreateRequest, res: express.Response) => {
-  try {
-    createUser(req.body).then(dataObj => {
+  createUser(req.body).then(dataObj => {
 
-      const { password, __v, ...data } = dataObj;
-      res.status(201).send({
-        message: "User added successfully!",
-        data: data
-      });
-
-    }).catch(err => {
-      console.error("Error in adding user: ", err);
-      res.status(500).send("Failed to add user");
+    const { password, __v, ...data } = dataObj;
+    res.status(201).send({
+      message: "User added successfully!",
+      data: data
     });
-  } catch (err) {
+
+  }).catch(err => {
     console.error("Error in adding user: ", err);
-    res.status(500).send({
-      message: "Failed to add user",
-      error: "Internal Server Error"
-    });
-  }
+    res.status(500).send("Failed to add user");
+  });
 
 });
 
