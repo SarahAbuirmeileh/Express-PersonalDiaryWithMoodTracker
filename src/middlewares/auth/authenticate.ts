@@ -10,8 +10,6 @@ const authenticate = async (
 ) => {
 
     const token = req.cookies[COOKIE_NAME] || '';
-    console.log(token);
-    
     let tokenIsValid: JwtPayload | null | string;
 
     try {
@@ -32,12 +30,12 @@ const authenticate = async (
             next();
         } else {
             res.status(401).send({
-                message: 'Error: Authentication failed!'
+                error: 'Authentication failed!'
             });
         }
     } else {
         res.status(401).send({
-            message: 'Error: Authentication failed!'
+            error: 'Authentication failed!'
         });
     }
 }

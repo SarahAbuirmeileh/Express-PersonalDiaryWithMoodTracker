@@ -30,12 +30,12 @@ const DiarySchema = new Schema({
     tags: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'tag',
+            ref: 'Tag',
         }
     ],
     user: {
         type: Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'User',
         required: true,
     }
 });

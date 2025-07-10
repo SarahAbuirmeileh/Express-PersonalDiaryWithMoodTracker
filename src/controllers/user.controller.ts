@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { NSUser } from '../@types/user.types.js';
 import User from '../db/models/user.js';
 import jwt from 'jsonwebtoken';
+import { CustomError } from '../utils/CustomError.js';
 
 const createUser = async (payload: NSUser.IUser) => {
     try {
@@ -16,8 +17,7 @@ const createUser = async (payload: NSUser.IUser) => {
 
         const existingUser = await User.findOne({ email: payload.email });
         if (existingUser) {
-            const error = new Error('User already exists');
-            (error as any).status = 400;
+            const error = new CustomError('User already exists', 400);
             throw error;
         }
 
@@ -28,8 +28,9 @@ const createUser = async (payload: NSUser.IUser) => {
         return userData;
 
     } catch (err) {
-        const error: any = new Error('Error creating user');
-        error.status = 400;
+        const error: any = new CustomError('Error creating user', 500);
+        console.error("Error creating user: ", err);
+ 
         throw error;
     }
 };
@@ -41,16 +42,14 @@ const login = async (email: string, password: string) => {
             email
         }).lean();
     } catch (err) {
-        const error: any = new Error('Error finding user');
-        error.status = 500;
+        const error = new CustomError('Error finding user', 500);
         throw error;
     }
 
     if (user && user.password) {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            const error: any = new Error('Invalid email or password');
-            error.status = 400;
+            const error = new CustomError('Invalid email or password', 400);
             throw error;
         }
         const token = jwt.sign(
@@ -62,8 +61,7 @@ const login = async (email: string, password: string) => {
         );
         return { token, user };
     } else {
-        const error: any = new Error('No user with this email!');
-        error.status = 400;
+        const error = new CustomError('No user with this email!', 404);
         throw error;
     }
 }

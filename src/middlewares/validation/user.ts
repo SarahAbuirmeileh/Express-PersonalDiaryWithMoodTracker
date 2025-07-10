@@ -4,7 +4,7 @@ import { isValidPassword } from '../../utils/validation.js';
 import User from '../../db/models/user.js';
 
 const validateUserCreation = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const user = req.body;
+    const user = req.body || {};
     const errorList: string[] = [];
 
     const requiredFields = ["name", "email", "password"];
@@ -26,14 +26,17 @@ const validateUserCreation = async (req: express.Request, res: express.Response,
     }
 
     if (errorList.length) {
-        res.status(400).send({ message: 'User creation failed', errors: errorList });
+        res.status(400).send({
+            message: 'User creation failed',
+            error: errorList
+        });
     } else {
         next();
     }
 };
 
 const validateUserLogin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const user = req.body;
+    const user = req.body || {};
     const errorList: string[] = [];
 
     const requiredFields = ["email", "password"];
@@ -44,13 +47,16 @@ const validateUserLogin = async (req: express.Request, res: express.Response, ne
     });
 
     if (errorList.length) {
-        res.status(400).send({ message: 'User login failed', errors: errorList });
+        res.status(400).send({
+            message: 'User login failed',
+            error: errorList
+        });
     } else {
         next();
     }
 };
 
-export{
+export {
     validateUserCreation,
     validateUserLogin
 }

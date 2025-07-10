@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
     diaries: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'diary',
+            ref: 'Diary',
         }
     ],
 });

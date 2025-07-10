@@ -9,5 +9,6 @@ export namespace NSUser {
         imageURL?: string;
     }
 
-    export interface IUserRequest extends express.Request<{}, {}, NSUser.IUser, {}> { }
+    export interface IUserCreateRequest extends express.Request<{}, {}, NSUser.IUser, {}> { }
+    
 }
