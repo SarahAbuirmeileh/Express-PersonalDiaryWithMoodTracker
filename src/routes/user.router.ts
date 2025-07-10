@@ -18,11 +18,11 @@ router.post('/signup', validateUserCreation, (req: NSUser.IUserRequest, res: exp
       });
 
     }).catch(err => {
-      console.log("Error in adding user: ", err);
+      console.error("Error in adding user: ", err);
       res.status(500).send("Failed to add user");
     });
   } catch (err) {
-    console.log("Error in adding user: ", err);
+    console.error("Error in adding user: ", err);
     res.status(500).send("Failed to add user!");
   }
 
@@ -44,7 +44,7 @@ router.post('/login', validateUserLogin, (req: NSUser.IUserRequest, res: express
       });
     })
     .catch(err => {
-      console.log("Error in logging in user: ", err.message);
+      console.error("Error in logging in user: ", err.message);
       res.status(500).send("Failed to log in user: " + (err.status === 400 ? err.message : ""));
     });
 });

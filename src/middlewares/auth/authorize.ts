@@ -35,21 +35,33 @@ const checkTagOwnership = async (
             tag = await Tag.findById(tagId);
         } catch (err) {
             console.error("Error finding tag:", err);
-            return res.status(500).json({ message: "Internal server error" });
+            return res.status(500).send({
+                message: "Authorization Failed",
+                error: "Internal server error"
+            });
         }
 
         if (!tag) {
-            return res.status(404).json({ message: "Error: Tag not found!" });
+            return res.status(404).send({
+                message: "Authorization Failed",
+                error: "Error: Tag not found!"
+            });
         }
 
         if (res.locals.user && res.locals.user.id == tag.user?.toString()) {
             return next();
         }
 
-        return res.status(403).json({ message: "Authorization Error: You don't have permission to access this resource!" });
+        return res.status(403).json({
+            message: "Authorization failed",
+            error: "You don't have permission to access this resource!"
+        });
     } catch (err) {
         console.error("Error checking diary ownership:", err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({
+            message: "Authorization failed",
+            error: "Internal server error"
+        });
     }
 };
 
@@ -66,21 +78,33 @@ const checkDiaryOwnership = async (
             diary = await Diary.findById(diaryId);
         } catch (err) {
             console.error("Error finding diary:", err);
-            return res.status(500).json({ message: "Internal server error" });
+            return res.status(500).json({
+                message: "Authorization failed",
+                error: "Internal server error"
+            });
         }
 
         if (!diary) {
-            return res.status(404).json({ message: "Error: Diary not found!" });
+            return res.status(404).json({
+                message: "Authorization failed",
+                error: "Error: Diary not found!"
+            });
         }
 
         if (res.locals.user && res.locals.user.id == diary.user.toString()) {
             return next();
         }
 
-        return res.status(403).json({ message: "Authorization Error: You don't have permission to access this resource!" });
+        return res.status(403).json({
+            message: "Authorization failed",
+            error: "You don't have permission to access this resource!"
+        });
     } catch (err) {
         console.error("Error checking diary ownership:", err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({
+            message: "Authorization failed",
+            error: "Internal server error"
+        });
     }
 };
 
@@ -96,7 +120,10 @@ const checkUserOwnership = (
             next();
         }
     }
-    res.status(403).send({ message: "Authorized Error: You don't have the permission to access this resource!" });
+    res.status(403).send({
+        message: "Authorization failed",
+        error: "You don't have permission to access this resource!"
+    });
 }
 
 export {
