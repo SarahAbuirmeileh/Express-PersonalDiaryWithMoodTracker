@@ -3,6 +3,7 @@ import { NSUser } from '../@types/user.types.js';
 import User from '../db/models/user.js';
 import jwt from 'jsonwebtoken';
 import { CustomError } from '../utils/CustomError.js';
+import { isValidPassword } from "../utils/validation.js";
 
 const createUser = async (payload: NSUser.IUser) => {
     try {
@@ -66,7 +67,94 @@ const login = async (email: string, password: string) => {
     }
 }
 
+const getUserById = async (id: string) => {
+  try {
+    const user = await User.findById(id).select("-password -__v");
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+    return user;
+  } catch (err) {
+    console.error("Error getting user:", err);
+    throw new CustomError("Error getting user", 500);
+  }
+};
+
+const updateUser = async (id: string,data: Partial<NSUser.IUser> & { currentPassword?: string }) => {
+  try {
+    if (data.email) {
+      const existingUser = await User.findOne({ email: data.email });
+      if (existingUser && existingUser._id.toString() !== id) {
+        throw new CustomError("Email is already in use", 400);
+      }
+    }
+
+    if (data.password) {
+      if (!data.currentPassword) {
+        throw new CustomError(
+          "Current password is required to change the password",
+          400
+        );
+      }
+
+      const user = await User.findById(id);
+      if (!user) {
+        throw new CustomError("User not found", 404);
+      }
+
+      try {
+        const isMatch = await bcrypt.compare(data.currentPassword, user.password);
+        if (!isMatch) {
+          throw new CustomError("Current password is incorrect", 401);
+        }
+
+        const validationErrors = isValidPassword(data.password);
+        if (validationErrors.length > 0) {
+          throw new CustomError(validationErrors.join(", "), 400);
+        }
+
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        data.password = hashedPassword;
+      } catch (err) {
+        console.error("Password update error:", err);
+        if (err instanceof CustomError) throw err;
+        throw new CustomError("Something went wrong while updating password", 500);
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    }).select("-password -__v");
+
+    if (!updatedUser) {
+      throw new CustomError("User not found", 404);
+    }
+
+    return updatedUser;
+  } catch (err) {
+    console.error("Error updating user:", err);
+    if (err instanceof CustomError) throw err;
+    throw new CustomError("Error updating user", 500);
+  }
+};
+
+const deleteUser = async (id: string) => {
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    throw new CustomError("Error deleting user", 500);
+  }
+};
+
 export {
     createUser,
     login,
+    getUserById,
+    updateUser, 
+    deleteUser
 };
