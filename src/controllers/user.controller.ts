@@ -80,46 +80,12 @@ const getUserById = async (id: string) => {
   }
 };
 
-const updateUser = async (id: string,data: Partial<NSUser.IUser> & { currentPassword?: string }) => {
+const updateUser = async (id: string, data: Partial<NSUser.IUser>) => {
   try {
-    if (data.email) {
-      const existingUser = await User.findOne({ email: data.email });
-      if (existingUser && existingUser._id.toString() !== id) {
-        throw new CustomError("Email is already in use", 400);
-      }
-    }
-
+    
     if (data.password) {
-      if (!data.currentPassword) {
-        throw new CustomError(
-          "Current password is required to change the password",
-          400
-        );
-      }
-
-      const user = await User.findById(id);
-      if (!user) {
-        throw new CustomError("User not found", 404);
-      }
-
-      try {
-        const isMatch = await bcrypt.compare(data.currentPassword, user.password);
-        if (!isMatch) {
-          throw new CustomError("Current password is incorrect", 401);
-        }
-
-        const validationErrors = isValidPassword(data.password);
-        if (validationErrors.length > 0) {
-          throw new CustomError(validationErrors.join(", "), 400);
-        }
-
-        const hashedPassword = await bcrypt.hash(data.password, 10);
-        data.password = hashedPassword;
-      } catch (err) {
-        console.error("Password update error:", err);
-        if (err instanceof CustomError) throw err;
-        throw new CustomError("Something went wrong while updating password", 500);
-      }
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      data.password = hashedPassword;
     }
 
     const updatedUser = await User.findByIdAndUpdate(id, data, {
