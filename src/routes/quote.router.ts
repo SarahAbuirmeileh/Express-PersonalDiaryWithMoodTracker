@@ -6,6 +6,7 @@ import {
   deleteQuote,
 } from "../controllers/quote.controller.js";
 import { NSQuote } from "../@types/quote.type.js";
+import { validateQutoeCreation } from "../middlewares/validation/quote.js";
 
 const router = express.Router();
 
@@ -25,24 +26,28 @@ router.get("/quotes", async (req: express.Request, res: express.Response) => {
   }
 });
 
-router.post("/quotes", async (req: express.Request, res: express.Response) => {
-  try {
-    const payload = req.body as NSQuote.IQuote;
-    const quote = await createQuote(payload);
-    const { __v, ...data } = quote;
+router.post(
+  "/quotes",
+  validateQutoeCreation,
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const payload = req.body as NSQuote.IQuote;
+      const quote = await createQuote(payload);
+      const { __v, ...data } = quote;
 
-    res.status(201).json({
-      message: "Quote added successfully!",
-      data: data,
-    });
-  } catch (err) {
-    console.error("Error in adding quote:", err);
-    res.status(500).json({
-      message: "Failed to add quote",
-      error: "Internal Server Error",
-    });
+      res.status(201).json({
+        message: "Quote added successfully!",
+        data: data,
+      });
+    } catch (err) {
+      console.error("Error in adding quote:", err);
+      res.status(500).json({
+        message: "Failed to add quote",
+        error: "Internal Server Error",
+      });
+    }
   }
-});
+);
 
 router.put(
   "/quotes/:id",
