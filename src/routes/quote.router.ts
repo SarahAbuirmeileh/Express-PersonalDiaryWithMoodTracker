@@ -3,16 +3,11 @@ import {
   getAllQuotes,
   createQuote,
   updateQuote,
+  deleteQuote,
 } from "../controllers/quote.controller.js";
 import { NSQuote } from "../@types/quote.type.js";
 
 const router = express.Router();
-
-// Create API endpoints for managing motivational quotes:
-// POST /quotes: Add a new quote (text, author).
-// GET /quotes: Retrieve list of quotes (pagination optional).
-// PUT /quotes/:id: Edit a quote.
-// DELETE /quotes/:id: Delete a quote.
 
 router.get("/quotes", async (req: express.Request, res: express.Response) => {
   try {
@@ -51,7 +46,6 @@ router.post("/quotes", async (req: express.Request, res: express.Response) => {
 
 router.put(
   "/quotes/:id",
-
   (req: NSQuote.IQuoteUpdateRequest, res: express.Response) => {
     updateQuote({ ...req.body, id: req.params.id })
       .then((data) => {
@@ -69,3 +63,21 @@ router.put(
       });
   }
 );
+
+router.delete("/quotes/:id", (req: express.Request, res: express.Response) => {
+  const id = req.params.id;
+
+  deleteQuote(id)
+    .then(() => {
+      res.status(200).send({
+        message: "Quote deleted successfully!",
+      });
+    })
+    .catch((err) => {
+      console.error("Error in deleting quote: ", err);
+      res.status(500).send({
+        message: "Failed to delete quote",
+        error: "Internal Server Error",
+      });
+    });
+});

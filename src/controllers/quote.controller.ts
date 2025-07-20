@@ -45,4 +45,16 @@ const updateQuote = async (payload: NSQuote.IEditQuote) => {
   }
 };
 
-export { getAllQuotes, createQuote, updateQuote };
+const deleteQuote = async (quoteId: string) => {
+  try {
+    const quote = await Quote.findOneAndDelete({ _id: quoteId });
+    if (!quote) {
+      throw new CustomError("Quote not found", 404);
+    }
+  } catch (err) {
+    console.error("Error deleting quote: ", err);
+    throw new CustomError("Error deleting quote", 500);
+  }
+};
+
+export { getAllQuotes, createQuote, updateQuote, deleteQuote };
