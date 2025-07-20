@@ -1,5 +1,9 @@
 import express from "express";
-import { getAllQuotes, createQuote } from "../controllers/quote.controller.js";
+import {
+  getAllQuotes,
+  createQuote,
+  updateQuote,
+} from "../controllers/quote.controller.js";
 import { NSQuote } from "../@types/quote.type.js";
 
 const router = express.Router();
@@ -44,3 +48,24 @@ router.post("/quotes", async (req: express.Request, res: express.Response) => {
     });
   }
 });
+
+router.put(
+  "/quotes/:id",
+
+  (req: NSQuote.IQuoteUpdateRequest, res: express.Response) => {
+    updateQuote({ ...req.body, id: req.params.id })
+      .then((data) => {
+        res.status(200).send({
+          message: "Quote updated successfully!",
+          data: data,
+        });
+      })
+      .catch((err) => {
+        console.error("Error in updating Quote: ", err);
+        res.status(500).send({
+          message: "Failed to update quote",
+          error: "Internal Server Error",
+        });
+      });
+  }
+);

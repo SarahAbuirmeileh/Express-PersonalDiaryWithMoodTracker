@@ -23,4 +23,26 @@ const createQuote = async (payload: NSQuote.IQuote) => {
   }
 };
 
-export { getAllQuotes, createQuote };
+const updateQuote = async (payload: NSQuote.IEditQuote) => {
+  try {
+    let quote = await Quote.findOne({ _id: payload.id });
+
+    if (quote) {
+      quote.text = payload.text ?? quote.text;
+      quote.author = payload.author ?? quote.author;
+
+      await quote.save();
+
+      const quoteData = quote.toObject();
+      return quoteData;
+    } else {
+      throw new CustomError("Quote not found", 404);
+    }
+  } catch (err) {
+    const error = new CustomError("Error updating quote", 500);
+    console.error("Error updating quote: ", err);
+    throw error;
+  }
+};
+
+export { getAllQuotes, createQuote, updateQuote };
