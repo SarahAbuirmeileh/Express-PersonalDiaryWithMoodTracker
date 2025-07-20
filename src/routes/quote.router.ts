@@ -6,7 +6,10 @@ import {
   deleteQuote,
 } from "../controllers/quote.controller.js";
 import { NSQuote } from "../@types/quote.type.js";
-import { validateQutoeCreation } from "../middlewares/validation/quote.js";
+import {
+  validateQutoeCreation,
+  validateQutoeUpdate,
+} from "../middlewares/validation/quote.js";
 
 const router = express.Router();
 
@@ -51,6 +54,7 @@ router.post(
 
 router.put(
   "/quotes/:id",
+  validateQutoeUpdate,
   (req: NSQuote.IQuoteUpdateRequest, res: express.Response) => {
     updateQuote({ ...req.body, id: req.params.id })
       .then((data) => {
