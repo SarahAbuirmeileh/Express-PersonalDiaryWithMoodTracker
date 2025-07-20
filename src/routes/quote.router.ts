@@ -1,5 +1,7 @@
 import express from "express";
-import { getAllQuotes } from "../controllers/quote.controller.js";
+import { getAllQuotes, createQuote } from "../controllers/quote.controller.js";
+import { NSQuote } from "../@types/quote.type.js";
+
 const router = express.Router();
 
 // Create API endpoints for managing motivational quotes:
@@ -19,6 +21,25 @@ router.get("/quotes", async (req: express.Request, res: express.Response) => {
     console.error("Error fetching quotes:", err);
     res.status(500).json({
       message: "Failed to fetch quotes",
+      error: "Internal Server Error",
+    });
+  }
+});
+
+router.post("/quotes", async (req: express.Request, res: express.Response) => {
+  try {
+    const payload = req.body as NSQuote.IQuote;
+    const quote = await createQuote(payload);
+    const { __v, ...data } = quote;
+
+    res.status(201).json({
+      message: "Quote added successfully!",
+      data: data,
+    });
+  } catch (err) {
+    console.error("Error in adding quote:", err);
+    res.status(500).json({
+      message: "Failed to add quote",
       error: "Internal Server Error",
     });
   }
