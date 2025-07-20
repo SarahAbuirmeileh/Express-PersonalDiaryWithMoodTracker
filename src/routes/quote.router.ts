@@ -9,6 +9,7 @@ import { NSQuote } from "../@types/quote.type.js";
 import {
   validateQutoeCreation,
   validateQutoeUpdate,
+  validateQuoteDeletion,
 } from "../middlewares/validation/quote.js";
 
 const router = express.Router();
@@ -73,20 +74,24 @@ router.put(
   }
 );
 
-router.delete("/quotes/:id", (req: express.Request, res: express.Response) => {
-  const id = req.params.id;
+router.delete(
+  "/quotes/:id",
+  validateQuoteDeletion,
+  (req: express.Request, res: express.Response) => {
+    const id = req.params.id;
 
-  deleteQuote(id)
-    .then(() => {
-      res.status(200).send({
-        message: "Quote deleted successfully!",
+    deleteQuote(id)
+      .then(() => {
+        res.status(200).send({
+          message: "Quote deleted successfully!",
+        });
+      })
+      .catch((err) => {
+        console.error("Error in deleting quote: ", err);
+        res.status(500).send({
+          message: "Failed to delete quote",
+          error: "Internal Server Error",
+        });
       });
-    })
-    .catch((err) => {
-      console.error("Error in deleting quote: ", err);
-      res.status(500).send({
-        message: "Failed to delete quote",
-        error: "Internal Server Error",
-      });
-    });
-});
+  }
+);

@@ -67,5 +67,22 @@ const validateQutoeUpdate = async (
 
   next();
 };
+const validateQuoteDeletion = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  const id = req.params.id;
+  const isValid = mongoose.Types.ObjectId.isValid(id);
+  const quote = isValid ? await Quote.findById(id) : null;
 
-export { validateQutoeCreation, validateQutoeUpdate };
+  if (!quote) {
+    res.status(404).send({
+      message: "Deleting quote failed",
+      error: "Quote not found.",
+    });
+  } else {
+    next();
+  }
+};
+export { validateQutoeCreation, validateQutoeUpdate, validateQuoteDeletion };
