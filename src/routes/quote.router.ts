@@ -11,6 +11,7 @@ import {
   validateQutoeUpdate,
   validateQuoteDeletion,
 } from "../middlewares/validation/quote.js";
+import { authenticate } from "../middlewares/auth/authenticate.js";
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.get("/quotes", async (req: express.Request, res: express.Response) => {
 
 router.post(
   "/quotes",
+  authenticate,
   validateQutoeCreation,
   async (req: express.Request, res: express.Response) => {
     try {
@@ -55,6 +57,7 @@ router.post(
 
 router.put(
   "/quotes/:id",
+  authenticate,
   validateQutoeUpdate,
   (req: NSQuote.IQuoteUpdateRequest, res: express.Response) => {
     updateQuote({ ...req.body, id: req.params.id })
@@ -76,6 +79,7 @@ router.put(
 
 router.delete(
   "/quotes/:id",
+  authenticate,
   validateQuoteDeletion,
   (req: express.Request, res: express.Response) => {
     const id = req.params.id;
