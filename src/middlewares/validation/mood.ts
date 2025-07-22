@@ -1,7 +1,9 @@
 import { RequestHandler } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import User from '../../db/models/user.js';
 import { Mood } from '../../db/index.js';
+import { NSMood } from '../../@types/mood.type.js';
+import { CustomError } from '../../utils/CustomError.js';
 
 export const validateMoodCreation: RequestHandler = async (req, res, next) => {
   const mood = req.body || {};
@@ -58,26 +60,26 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
     }
   }
 
-  if (moodData.type === 'custom') {
-    if (!moodData.user) {
-      res.status(400).send({
-        message: 'Updating mood failed',
-        error: 'User is required when type is custom.'
-      });
-      return;
-    }
 
-    const isValidUser = mongoose.Types.ObjectId.isValid(moodData.user);
-    const user = isValidUser ? await User.findById(moodData.user) : null;
-
-    if (!user) {
-      res.status(400).send({
-        message: 'Updating mood failed',
-        error: 'User does not exist.'
-      });
-      return;
-    }
+  if (!moodData.user) {
+    res.status(400).send({
+      message: 'Updating mood failed',
+      error: 'User is required when type is custom.'
+    });
+    return;
   }
+
+  const isValidUser = mongoose.Types.ObjectId.isValid(moodData.user);
+  const user = isValidUser ? await User.findById(moodData.user) : null;
+
+  if (!user) {
+    res.status(400).send({
+      message: 'Updating mood failed',
+      error: 'User does not exist.'
+    });
+    return;
+  }
+
 
   next();
 };
@@ -105,7 +107,7 @@ export const validateUserExistence: RequestHandler = async (req, res, next) => {
 
   if (!user) {
     res.status(404).send({
-      message: 'Tags retrieval failed',
+      message: 'Moods retrieval failed',
       error: 'User not found.'
     });
     return;
@@ -113,3 +115,36 @@ export const validateUserExistence: RequestHandler = async (req, res, next) => {
 
   next();
 };
+
+
+export const updateInputValidation = (updateData: NSMood.IEditMood) => {
+  if (!updateData.name && !updateData.emoji && !updateData.color) {
+    throw new CustomError('At least one field is required to update', 400);
+  }
+}
+
+export const moodUpdateValidation = (updateData: NSMood.IEditMood) => {
+
+  const mood = Mood.findByIdAndUpdate(
+    updateData.id,
+    { ...updateData },
+    { new: true, runValidators: true }
+  );
+  if (!mood) {
+    throw new CustomError('Mood not found', 404);
+  } else {
+    return mood;
+  }
+
+}
+
+export const validatDeletion = (id: ObjectId) => {
+  const deleted = Mood.findByIdAndDelete(id);
+
+  if (!deleted) {
+    throw new CustomError('Mood not found', 404);
+  }
+  else {
+    return true;
+  }
+}

@@ -1,6 +1,8 @@
 import Mood from '../db/models/mood.js';
 import { NSMood } from '../@types/mood.type.js';
 import { CustomError } from '../utils/CustomError.js';
+import { moodUpdateValidation, updateInputValidation, validatDeletion } from '../middlewares/validation/mood.js';
+import { ObjectId } from 'mongoose';
 
 const createMood = async (payload: NSMood.IMood) => {
     try {
@@ -31,48 +33,29 @@ const getMoodByName = async (name: string) => {
         }
         return mood.toObject();
     } catch (err) {
-        console.error("Error fetching mood by name:", err);
-        throw err;
+        console.error("Error fetching moods:", err);
+        throw new CustomError(`Error fetching moods ${err} `, 500);
     }
 };
 
 const updateMood = async (payload: NSMood.IEditMood) => {
     const { id, ...updateData } = payload;
-
+    updateInputValidation(payload);
     if (!id) {
         throw new CustomError('Mood ID is required', 400);
     }
-
-    if (!updateData.name && !updateData.emoji && !updateData.color) {
-        throw new CustomError('At least one field is required to update', 400);
-    }
-
     try {
-        const mood = await Mood.findByIdAndUpdate(
-            id,
-            { ...updateData },
-            { new: true, runValidators: true }
-        );
-
-        if (!mood) {
-            throw new CustomError('Mood not found', 404);
-        }
-
-        return mood.toObject();
+        const mood = await moodUpdateValidation(payload);
+        return mood;
     } catch (err) {
         console.error("Error updating mood:", err);
         throw new CustomError('Error updating mood', 500);
     }
 };
 
-const deleteMood = async (id: string) => {
+const deleteMood = async (id: ObjectId) => {
     try {
-        const deleted = await Mood.findByIdAndDelete(id);
-
-        if (!deleted) {
-            throw new CustomError('Mood not found', 404);
-        }
-
+        const deleted = validatDeletion(id);
         return { message: 'Mood deleted successfully' };
     } catch (err) {
         console.error("Error deleting mood:", err);
@@ -84,8 +67,7 @@ const getMoodsForUser = async (userId: string) => {
     try {
         const moods = await Mood.find({
             $or: [
-                { type: 'global' },
-                { user: userId, type: 'custom' }
+                { user: userId }
             ]
         });
         return moods.map(mood => mood.toObject());
@@ -95,7 +77,6 @@ const getMoodsForUser = async (userId: string) => {
         console.error("Error fetching mood for user: ", err);
         throw error;
     }
-    ;
 }
 
 export {
