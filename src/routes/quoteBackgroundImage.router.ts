@@ -7,9 +7,13 @@ import express from "express";
 import {
   getAllQuoteBgImages,
   createQuoteBgImage,
+  updateQuoteBgImage,
 } from "../controllers/quoteBackgroundImage.controller.js";
 import { authenticate } from "../middlewares/auth/authenticate.js";
-import { validateBgImageCreation } from "../middlewares/validation/quoteBackgroundImage.js";
+import {
+  validateBgImageCreation,
+  validateBgImageUpdate,
+} from "../middlewares/validation/quoteBackgroundImage.js";
 
 const router = express.Router();
 
@@ -50,6 +54,32 @@ router.post(
       console.error("Error adding background image:", err);
       res.status(500).json({
         message: "Failed to add background image",
+        error: "Internal Server Error",
+      });
+    }
+  }
+);
+
+router.put(
+  "/quote-bg-image/:id",
+  authenticate,
+  validateBgImageUpdate,
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const { backgroundImage } = req.body;
+      const id = req.params.id;
+
+      const updated = await updateQuoteBgImage(id, backgroundImage);
+      const { __v, ...data } = updated;
+
+      res.status(200).json({
+        message: "Background image updated successfully!",
+        data: data,
+      });
+    } catch (err) {
+      console.error("Error updating background image:", err);
+      res.status(500).json({
+        message: "Failed to update background image",
         error: "Internal Server Error",
       });
     }

@@ -21,4 +21,18 @@ const createQuoteBgImage = async (imageUrl: string) => {
     throw new CustomError("Error creating background image", 500);
   }
 };
-export { getAllQuoteBgImages, createQuoteBgImage };
+
+const updateQuoteBgImage = async (id: string, newUrl: string) => {
+  try {
+    const image = await QuoteBackgroundImage.findById(id);
+    if (!image) throw new CustomError("Background image not found", 404);
+
+    image.backgroundImage = newUrl;
+    await image.save();
+    return image.toObject();
+  } catch (err) {
+    console.error("Error updating background image:", err);
+    throw new CustomError("Error updating background image", 500);
+  }
+};
+export { getAllQuoteBgImages, createQuoteBgImage, updateQuoteBgImage };
