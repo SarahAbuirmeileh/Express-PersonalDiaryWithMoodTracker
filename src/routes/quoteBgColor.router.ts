@@ -5,10 +5,11 @@ import {
   updateColor,
   deleteColor,
 } from "../controllers/quoteBgColor.controller.js";
+import { authenticate } from "../middlewares/auth/authenticate.js";
 
 const router = express.Router();
 
-router.post("/", (req: express.Request, res: express.Response) => {
+router.post("/", authenticate, (req: express.Request, res: express.Response) => {
   addColor(req.body)
     .then((color) => {
       res.status(201).send({
@@ -48,7 +49,7 @@ router.get("/", (req: express.Request, res: express.Response) => {
     });
 });
 
-router.put("/:id", (req: express.Request, res: express.Response) => {
+router.put("/:id", authenticate, (req: express.Request, res: express.Response) => {
   updateColor(req.params.id, req.body)
     .then((color) => {
       res.status(200).send({
@@ -68,7 +69,7 @@ router.put("/:id", (req: express.Request, res: express.Response) => {
     });
 });
 
-router.delete("/:id", (req: express.Request, res: express.Response) => {
+router.delete("/:id", authenticate, (req: express.Request, res: express.Response) => {
   deleteColor(req.params.id)
     .then(() => {
       res.status(200).send({
