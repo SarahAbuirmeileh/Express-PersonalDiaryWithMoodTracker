@@ -11,4 +11,14 @@ const getAllQuoteBgImages = async () => {
   }
 };
 
-export { getAllQuoteBgImages };
+const createQuoteBgImage = async (imageUrl: string) => {
+  try {
+    const image = new QuoteBackgroundImage({ backgroundImage: imageUrl });
+    await image.save();
+    return image.toObject();
+  } catch (err) {
+    console.error("Error creating background image:", err);
+    throw new CustomError("Error creating background image", 500);
+  }
+};
+export { getAllQuoteBgImages, createQuoteBgImage };
