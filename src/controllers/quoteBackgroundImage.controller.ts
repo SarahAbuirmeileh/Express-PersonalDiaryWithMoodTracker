@@ -35,4 +35,20 @@ const updateQuoteBgImage = async (id: string, newUrl: string) => {
     throw new CustomError("Error updating background image", 500);
   }
 };
-export { getAllQuoteBgImages, createQuoteBgImage, updateQuoteBgImage };
+
+const deleteQuoteBgImage = async (id: string) => {
+  try {
+    const result = await QuoteBackgroundImage.findByIdAndDelete(id);
+    if (!result) throw new CustomError("Background image not found", 404);
+  } catch (err) {
+    console.error("Error deleting background image:", err);
+    throw new CustomError("Error deleting background image", 500);
+  }
+};
+
+export {
+  getAllQuoteBgImages,
+  createQuoteBgImage,
+  updateQuoteBgImage,
+  deleteQuoteBgImage,
+};

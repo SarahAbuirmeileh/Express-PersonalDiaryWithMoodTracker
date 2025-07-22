@@ -8,11 +8,13 @@ import {
   getAllQuoteBgImages,
   createQuoteBgImage,
   updateQuoteBgImage,
+  deleteQuoteBgImage,
 } from "../controllers/quoteBackgroundImage.controller.js";
 import { authenticate } from "../middlewares/auth/authenticate.js";
 import {
   validateBgImageCreation,
   validateBgImageUpdate,
+  validateBgImageDeletion,
 } from "../middlewares/validation/quoteBackgroundImage.js";
 
 const router = express.Router();
@@ -80,6 +82,28 @@ router.put(
       console.error("Error updating background image:", err);
       res.status(500).json({
         message: "Failed to update background image",
+        error: "Internal Server Error",
+      });
+    }
+  }
+);
+
+router.delete(
+  "/quote-bg-image/:id",
+  authenticate,
+  validateBgImageDeletion,
+  async (req, res) => {
+    try {
+      const id = req.params.id;
+      await deleteQuoteBgImage(id);
+
+      res.status(200).json({
+        message: "Background image deleted successfully!",
+      });
+    } catch (err) {
+      console.error("Error deleting background image:", err);
+      res.status(500).json({
+        message: "Failed to delete background image",
         error: "Internal Server Error",
       });
     }

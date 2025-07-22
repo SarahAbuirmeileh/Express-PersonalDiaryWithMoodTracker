@@ -40,10 +40,11 @@ const validateBgImageUpdate = async (
   const image = isValidId ? await QuoteBackgroundImage.findById(id) : null;
 
   if (!image) {
-    return res.status(404).json({
+    res.status(404).json({
       message: "Updating background image failed",
       error: "Background image not found.",
     });
+    return;
   }
   if (!backgroundImage) {
     res.status(400).json({
@@ -64,4 +65,27 @@ const validateBgImageUpdate = async (
   next();
 };
 
-export { validateBgImageCreation, validateBgImageUpdate };
+const validateBgImageDeletion = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  const { id } = req.params;
+  const isValidId = mongoose.Types.ObjectId.isValid(id);
+  const image = isValidId ? await QuoteBackgroundImage.findById(id) : null;
+
+  if (!image) {
+    res.status(404).send({
+      message: "Deleting background image failed",
+      error: "background image  not found.",
+    });
+  } else {
+    next();
+  }
+};
+
+export {
+  validateBgImageCreation,
+  validateBgImageUpdate,
+  validateBgImageDeletion,
+};
