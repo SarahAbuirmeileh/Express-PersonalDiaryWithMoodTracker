@@ -47,11 +47,21 @@ const validateQutoeUpdate = async (
   }
   const errorList: string[] = [];
   const fieldsToValidate = ["text", "author"];
+  const hasAtLeastOneField = fieldsToValidate.some(
+    (field) => field in quoteData
+  );
+
+  if (!hasAtLeastOneField) {
+    res.status(400).send({
+      message: "Updating quote failed",
+      error: "At least one of 'text' or 'author' must be provided.",
+    });
+    return;
+  }
+
   fieldsToValidate.forEach((field) => {
     if (field in quoteData) {
-      if (!quoteData[field]) {
-        errorList.push(`${field} cannot be empty.`);
-      } else if (typeof quoteData[field] !== "string") {
+      if (typeof quoteData[field] !== "string") {
         errorList.push(`${field} must be a string.`);
       }
     }
