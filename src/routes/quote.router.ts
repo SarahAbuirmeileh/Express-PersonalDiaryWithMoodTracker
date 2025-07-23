@@ -15,7 +15,7 @@ import { authenticate } from "../middlewares/auth/authenticate.js";
 
 const router = express.Router();
 
-router.get("/quotes", async (req: express.Request, res: express.Response) => {
+router.get("/", async (req: express.Request, res: express.Response) => {
   try {
     const quotes = await getAllQuotes();
     res.status(200).json({
@@ -32,7 +32,7 @@ router.get("/quotes", async (req: express.Request, res: express.Response) => {
 });
 
 router.post(
-  "/quotes",
+  "/",
   authenticate,
   validateQutoeCreation,
   async (req: express.Request, res: express.Response) => {
@@ -56,7 +56,7 @@ router.post(
 );
 
 router.put(
-  "/quotes/:id",
+  "/:id",
   authenticate,
   validateQutoeUpdate,
   (req: NSQuote.IQuoteUpdateRequest, res: express.Response) => {
@@ -78,7 +78,7 @@ router.put(
 );
 
 router.delete(
-  "/quotes/:id",
+  "/:id",
   authenticate,
   validateQuoteDeletion,
   (req: express.Request, res: express.Response) => {
@@ -99,3 +99,5 @@ router.delete(
       });
   }
 );
+
+export default router;
