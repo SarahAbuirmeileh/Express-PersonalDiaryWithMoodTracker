@@ -3,10 +3,9 @@ import cors from "cors";
 import { connectDB } from "./db/connection.js";
 import userRouter from "./routes/user.router.js";
 import tagRouter from "./routes/tag.router.js";
+import quoteBgColorRouter from "./routes/quoteBgColor.router.js";
 import quoteBackgroundImageRouter from "./routes/quoteBackgroundImage.router.js";
-
 import quoteRouter from "./routes/quote.router.js";
-
 import cookieParser from "cookie-parser";
 import { authenticate } from "./middlewares/auth/authenticate.js";
 
@@ -19,6 +18,7 @@ app.use(cookieParser());
 
 app.use("/users", userRouter);
 app.use("/tags", authenticate, tagRouter);
+app.use("/quote-bg-color", quoteBgColorRouter);
 app.use("/quote-bg-image", quoteBackgroundImageRouter);
 app.use("/quotes", quoteRouter);
 
