@@ -19,6 +19,7 @@ const validateUserCreation = async (req: express.Request, res: express.Response,
         errorList.push('Email is not valid.');
     }
 
+
     errorList.push(...isValidPassword(user.password));
 
     const existingUser = await User.findOne({ email: user.email });

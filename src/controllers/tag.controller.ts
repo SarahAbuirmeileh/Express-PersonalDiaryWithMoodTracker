@@ -21,7 +21,6 @@ const createTag = async (payload: NSTag.ITag) => {
     } catch (err) {
         const error: any = new CustomError('Error creating tag', 500);
         console.error("Error creating tag: ", err);
-
         throw error;
     }
 };
@@ -36,7 +35,7 @@ const updateTag = async (payload: NSTag.IEditTag) => {
             tag.type = payload.type ?? tag.type;
             if (tag.user && payload.type === 'global') {
                 const id = new mongoose.Types.ObjectId(tag.user);
-                tag.user = id; 
+                tag.user = id;
             }
 
             await tag.save();

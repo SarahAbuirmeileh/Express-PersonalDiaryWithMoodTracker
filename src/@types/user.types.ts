@@ -10,5 +10,4 @@ export namespace NSUser {
     }
 
     export interface IUserCreateRequest extends express.Request<{}, {}, NSUser.IUser, {}> { }
-    
 }
