@@ -71,9 +71,9 @@ router.delete('/:id', validateDiaryDeletion, async (req, res) => {
   }
 });
 
-router.get('/:name', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const diary = await getDiaryByID(req.params.name);
+    const diary = await getDiaryByID(req.params.id);
     res.status(200).send({
       message: "Diary fetched successfully!",
       data: diary

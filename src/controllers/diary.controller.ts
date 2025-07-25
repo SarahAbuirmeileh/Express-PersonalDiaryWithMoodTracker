@@ -16,7 +16,7 @@ const createDiary = async (payload: NSDiary.IDiary) => {
 
 const getDiaryByID = async (id: string) => {
     try {
-        const diary = await Diary.findOne({ id });
+        const diary = await Diary.findOne({ _id : id });
         if (!diary) {
             throw new CustomError('Diary not found', 404);
         }

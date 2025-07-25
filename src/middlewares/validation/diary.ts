@@ -32,12 +32,12 @@ export const validateDiaryCreation: RequestHandler = async (req, res, next) => {
 
 export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
     const diaryData = req.body || {};
-    const id = req.params._id;
+    const id = req.params.id;
 
     const isValidId = mongoose.Types.ObjectId.isValid(id);
     const diary = isValidId ? await Diary.findById(id) : null;
     if (!diaryData.title && !diaryData.state && !diaryData.type && !diaryData.images && !diaryData.audio && !diaryData.notes) {
-       throw new CustomError('At least one field is required to update', 400);
+        throw new CustomError('At least one field is required to update', 400);
     }
     if (!diary) {
         res.status(404).send({
@@ -82,21 +82,41 @@ export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
     next();
 };
 
-export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
-    const id = req.params.id;
-    const isValid = mongoose.Types.ObjectId.isValid(id);
-    const diary = isValid ? await Diary.findById(id) : null;
 
-    if (!diary) {
-        res.status(404).send({
-            message: 'Deleting diary failed',
-            error: 'Diary not found.'
-        });
-        throw new CustomError('Diary not found', 404);
+export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
+  try {
+    const diaryId = req.params.id;
+    const userId = req.user?._id;
+
+    if (!userId) {
+      res.status(401).json({ message: 'User not authenticated.' });
+      return;
     }
 
-    next();
+    if (!mongoose.Types.ObjectId.isValid(diaryId)) {
+      res.status(400).json({ message: 'Invalid diary ID.' });
+      return;
+    }
+
+    const diary = await Diary.findById(diaryId);
+    if (!diary) {
+      res.status(404).json({ message: 'Diary not found.' });
+      return;
+    }
+
+    if (diary.user.toString() !== userId.toString()) {
+      res.status(403).json({ message: 'Not authorized to delete this diary.' });
+      return;
+    }
+
+    next(); 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
 };
+
+
 
 export const validateUserExistence: RequestHandler = async (req, res, next) => {
     const userId = req.params.id;
