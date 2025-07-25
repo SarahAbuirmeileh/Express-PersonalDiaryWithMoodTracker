@@ -117,7 +117,7 @@ const checkUserOwnership = (
     const id = req.params.id;
     if (res.locals.user) {
         if (res.locals.user.id == id) {
-            next();
+            return next();
         }
     }
     res.status(403).send({
