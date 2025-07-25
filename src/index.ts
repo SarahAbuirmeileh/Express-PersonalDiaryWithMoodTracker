@@ -6,6 +6,7 @@ import tagRouter from './routes/tag.router.js';
 import cookieParser from 'cookie-parser';
 import { authenticate } from './middlewares/auth/authenticate.js';
 import moodRouter from './routes/mood.router.js';
+import diaryRouter from './routes/diary.router.js';
 
 const app = express();
 const port: number = 3000;
@@ -17,13 +18,12 @@ app.use(cookieParser());
 app.use('/users', userRouter);
 app.use('/tags', authenticate, tagRouter);
 app.use('/moods', moodRouter);
-
+app.use('/diaries', diaryRouter);
 
 app.get('/', (req: express.Request, res: express.Response) => {
   res.status(200).send("Hello world!");
 });
 
-// Catch all routes
 app.all('/{*notFound}', (req: express.Request, res: express.Response) => {
   res.status(404).send("Not found!");
 });

@@ -40,7 +40,9 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
 
   const isValidId = mongoose.Types.ObjectId.isValid(id);
   const mood = isValidId ? await Mood.findById(id) : null;
-
+  if (!moodData.name && !moodData.emoji && !moodData.color) {
+    throw new CustomError('At least one field is required to update', 400);
+  }
   if (!mood) {
     res.status(404).send({
       message: 'Updating mood failed',
@@ -64,7 +66,7 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
   if (!moodData.user) {
     res.status(400).send({
       message: 'Updating mood failed',
-      error: 'User is required when type is custom.'
+      error: 'User is required'
     });
     return;
   }
@@ -94,7 +96,7 @@ export const validateMoodDeletion: RequestHandler = async (req, res, next) => {
       message: 'Deleting mood failed',
       error: 'Mood not found.'
     });
-    return;
+    throw new CustomError('Mood not found', 404);
   }
 
   next();
@@ -117,34 +119,4 @@ export const validateUserExistence: RequestHandler = async (req, res, next) => {
 };
 
 
-export const updateInputValidation = (updateData: NSMood.IEditMood) => {
-  if (!updateData.name && !updateData.emoji && !updateData.color) {
-    throw new CustomError('At least one field is required to update', 400);
-  }
-}
 
-export const moodUpdateValidation = (updateData: NSMood.IEditMood) => {
-
-  const mood = Mood.findByIdAndUpdate(
-    updateData.id,
-    { ...updateData },
-    { new: true, runValidators: true }
-  );
-  if (!mood) {
-    throw new CustomError('Mood not found', 404);
-  } else {
-    return mood;
-  }
-
-}
-
-export const validatDeletion = (id: ObjectId) => {
-  const deleted = Mood.findByIdAndDelete(id);
-
-  if (!deleted) {
-    throw new CustomError('Mood not found', 404);
-  }
-  else {
-    return true;
-  }
-}

@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const DiarySchema = new Schema({
-    date: {
+    id: {
         type: Date,
         required: true,
         default: Date.now,
@@ -18,16 +18,16 @@ const DiarySchema = new Schema({
         type: [String],
         required: false,
     },
-    voices: {
+    audios: {
         type: [String],
         required: false,
     },
-    mood: {
+    state: {
         type: Number,
         required: false,
         default: 2, // neutral
     },
-    tags: [
+    type: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Tag',

@@ -1,8 +1,6 @@
 import Mood from '../db/models/mood.js';
 import { NSMood } from '../@types/mood.type.js';
 import { CustomError } from '../utils/CustomError.js';
-import { moodUpdateValidation, updateInputValidation, validatDeletion } from '../middlewares/validation/mood.js';
-import { ObjectId } from 'mongoose';
 
 const createMood = async (payload: NSMood.IMood) => {
     try {
@@ -34,29 +32,27 @@ const getMoodByName = async (name: string) => {
         return mood.toObject();
     } catch (err) {
         console.error("Error fetching moods:", err);
-        throw new CustomError(`Error fetching moods ${err} `, 500);
+        throw new CustomError(`Error fetching moods`, 500);
     }
 };
 
 const updateMood = async (payload: NSMood.IEditMood) => {
     const { id, ...updateData } = payload;
-    updateInputValidation(payload);
-    if (!id) {
-        throw new CustomError('Mood ID is required', 400);
-    }
     try {
-        const mood = await moodUpdateValidation(payload);
-        return mood;
+        const mood = await Mood.findByIdAndUpdate(id, updateData, { new: true });
+        if(mood) 
+            return mood;
     } catch (err) {
         console.error("Error updating mood:", err);
         throw new CustomError('Error updating mood', 500);
     }
 };
 
-const deleteMood = async (id: ObjectId) => {
+const deleteMood = async (id: string) => {
     try {
-        const deleted = validatDeletion(id);
-        return { message: 'Mood deleted successfully' };
+        const mood = await Mood.findByIdAndDelete(id);
+        if(mood) 
+            return { message: 'Mood deleted successfully' + mood };
     } catch (err) {
         console.error("Error deleting mood:", err);
         throw new CustomError('Error deleting mood', 500);
@@ -66,9 +62,7 @@ const deleteMood = async (id: ObjectId) => {
 const getMoodsForUser = async (userId: string) => {
     try {
         const moods = await Mood.find({
-            $or: [
-                { user: userId }
-            ]
+            userId
         });
         return moods.map(mood => mood.toObject());
 
