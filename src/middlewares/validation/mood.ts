@@ -50,7 +50,11 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
   }
 
   if (!moodData.name && !moodData.emoji && !moodData.color) {
-    throw new CustomError('At least one field is required to update', 400);
+    res.status(400).send({
+      message: 'Updating mood failed',
+      error: 'At least one field is required to update'
+    });
+    return;
   }
 
 

@@ -77,7 +77,7 @@ router.delete("/:id", authenticate, authorize("diaryOwnership"), validateDiaryDe
 });
 
 
-router.get("/:id", validateDiaryExistance, async (req, res) => {
+router.get("/:id", authenticate, validateDiaryExistance, async (req, res) => {
   try {
     const diary = await getDiaryByID(req.params.id);
     res.status(200).send({
@@ -118,7 +118,7 @@ router.get("/user/:id", authenticate, async (req, res) => {
     const diaries = await getDiariesForUser(userId);
 
     if (!diaries || diaries.length === 0) {
-      return res.status(404).send({
+      res.status(404).send({
         message: "No diaries found for the user.",
         error: "User has no diaries.",
       });

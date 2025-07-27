@@ -12,21 +12,6 @@ export const validateDiaryCreation: RequestHandler = async (req, res, next) => {
         errorList.push('At least one field is required to create');
     }
 
-    const startOfDay = new Date(diary.date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(diary.date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const existingDiary = await Diary.findOne({
-        date: { $gte: startOfDay, $lte: endOfDay }
-    });
-
-    if (existingDiary) {
-        errorList.push('Diary with this date already exists.');
-    }
-
-
     if (errorList.length) {
         res.status(400).send({
             message: 'Diary creation failed',
@@ -54,19 +39,6 @@ export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
     if (!diaryData.title && !diaryData.mood && !diaryData.tags && !diaryData.images && !diaryData.audio && !diaryData.notes) {
         throw new CustomError('At least one field is required to update', 400);
     }
-
-
-    if (diaryData.id) {
-        const existingDiary = await Diary.findOne({ id: diaryData.id });
-        if (existingDiary && !existingDiary._id.equals(id)) {
-            res.status(400).send({
-                message: 'Updating diary failed',
-                error: 'Diary with this name already exists.'
-            });
-            return;
-        }
-    }
-
 
     if (!diaryData.user) {
         res.status(400).send({
@@ -100,17 +72,26 @@ export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
 
 
         if (!mongoose.Types.ObjectId.isValid(diaryId)) {
-            res.status(400).json({ message: 'Invalid diary ID.' });
+            res.status(400).send({
+                message: 'Deleting diary failed',
+                error: 'Invalid diary ID.'
+            });
             return;
         }
 
         const diary = await Diary.findById(diaryId);
         if (!diary) {
-            res.status(404).json({ message: 'Diary not found.' });
+            res.status(404).send({
+                message: 'Deleting diary failed',
+                error: 'Dirary Not Found.'
+            });
             return;
         }
         if (!userId) {
-            res.status(401).json({ message: 'User not authenticated.' });
+            res.status(401).send({
+                message: 'Deleting diary failed',
+                error: 'User is required to delete the diary'
+            });
             return;
         }
         next();
@@ -120,25 +101,34 @@ export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
     }
 };
 
+
 export const validateDiaryExistance: RequestHandler = async (req, res, next) => {
     try {
         const diaryId = req.params._id;
 
         if (!mongoose.Types.ObjectId.isValid(diaryId)) {
-            res.status(400).json({ message: 'Invalid diary ID.' });
+            res.status(400).send({
+                message: 'Invalid diary',
+                error: 'Invalid diary ID.'
+            });
             return;
         }
-
         const diary = await Diary.findById(diaryId);
         if (!diary) {
-            res.status(404).json({ message: 'Diary not found.' });
+            res.status(400).send({
+                message: 'Diary not found',
+                error: 'Diary not found'
+            });
             return;
         }
     }
     catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Failed to find diary', error: 'Internal server error' });
-
+        res.status(400).send({
+            message: 'Failed to find diary',
+            error: 'Internal server error.'
+        });
+        return;
     }
     next();
 };
