@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const DiarySchema = new Schema({
+const Diarieschema = new Schema({
     date: {
         type: Date,
         required: true,
@@ -18,7 +18,7 @@ const DiarySchema = new Schema({
         type: [String],
         required: false,
     },
-    voices: {
+    audios: {
         type: [String],
         required: false,
     },
@@ -34,12 +34,12 @@ const DiarySchema = new Schema({
         }
     ],
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     }
 });
 
-const Diary = mongoose.model('Diary', DiarySchema);
+const Diary = mongoose.model('Diary', Diarieschema);
 
 export default Diary;
