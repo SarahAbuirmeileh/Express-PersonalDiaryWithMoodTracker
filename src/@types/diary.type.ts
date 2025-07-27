@@ -6,11 +6,11 @@ export namespace NSDiary {
 
     export interface IDiary {
         _id: mongoose.Types.ObjectId;
-        id: number;
+        date: number;
         title: string;
-        type: string[];
-        notes: string[];
-        state: number;
+        tags: string[];
+        notes?: string[];
+        mood: number;
         image?: string[];
         audio?: string[];
     }
@@ -19,11 +19,11 @@ export namespace NSDiary {
 
     export interface IEditDiary {
         _id: mongoose.Types.ObjectId;
-        id: number;
+        date: number;
         title?: string;
-        type?: string[]| ObjectId[];
+        tags?: string[]| ObjectId[];
         notes?: string[];
-        state?: number;
+        mood?: number;
         image?: string[];
         audio?: string[];
     }

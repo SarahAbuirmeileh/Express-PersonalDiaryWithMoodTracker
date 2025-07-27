@@ -52,7 +52,6 @@ router.put('/:id', validateMoodUpdate, async (req: NSMood.IMoodUpdateRequest, re
 
 router.delete('/:id', validateMoodDeletion, async (req, res) => {
   try {
-    const id = new mongoose.Types.ObjectId(req.params.id);
     await deleteMood(req.params.id);
     res.status(200).send({
       message: "Mood deleted successfully!"

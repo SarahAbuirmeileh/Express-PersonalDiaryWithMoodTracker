@@ -51,8 +51,8 @@ const updateMood = async (payload: NSMood.IEditMood) => {
 const deleteMood = async (id: string) => {
     try {
         const mood = await Mood.findByIdAndDelete(id);
-        if(mood) 
-            return { message: 'Mood deleted successfully' + mood };
+        if(mood)
+            return  mood;
     } catch (err) {
         console.error("Error deleting mood:", err);
         throw new CustomError('Error deleting mood', 500);

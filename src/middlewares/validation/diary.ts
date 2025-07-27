@@ -8,16 +8,24 @@ import { CustomError } from '../../utils/CustomError.js';
 export const validateDiaryCreation: RequestHandler = async (req, res, next) => {
     const diary = req.body || {};
     const errorList: string[] = [];
-    if (!diary.title && !diary.state && !diary.type && !diary.images && !diary.audio && !diary.notes) {
-        errorList.push('At least one field is required to update');
+    if (!diary.title && !diary.mood && !diary.tags && !diary.images && !diary.audio && !diary.notes) {
+        errorList.push('At least one field is required to create');
     }
 
-    if (diary.id) {
-        const existingDiary = await Diary.findOne({ id: diary.id });
-        if (existingDiary) {
-            errorList.push('Diary with this name already exists.');
-        }
+    const startOfDay = new Date(diary.date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(diary.date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const existingDiary = await Diary.findOne({
+        date: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    if (existingDiary) {
+        errorList.push('Diary with this date already exists.');
     }
+
 
     if (errorList.length) {
         res.status(400).send({
@@ -36,9 +44,6 @@ export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
 
     const isValidId = mongoose.Types.ObjectId.isValid(id);
     const diary = isValidId ? await Diary.findById(id) : null;
-    if (!diaryData.title && !diaryData.state && !diaryData.type && !diaryData.images && !diaryData.audio && !diaryData.notes) {
-        throw new CustomError('At least one field is required to update', 400);
-    }
     if (!diary) {
         res.status(404).send({
             message: 'Updating diary failed',
@@ -46,6 +51,10 @@ export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
         });
         return;
     }
+    if (!diaryData.title && !diaryData.mood && !diaryData.tags && !diaryData.images && !diaryData.audio && !diaryData.notes) {
+        throw new CustomError('At least one field is required to update', 400);
+    }
+
 
     if (diaryData.id) {
         const existingDiary = await Diary.findOne({ id: diaryData.id });
@@ -84,55 +93,53 @@ export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
 
 
 export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
-  try {
-    const diaryId = req.params.id;
-    const userId = req.user?._id;
+    try {
+        const diaryId = req.params._id;
+        const userId = req.user?._id;
 
-    if (!userId) {
-      res.status(401).json({ message: 'User not authenticated.' });
-      return;
+
+
+        if (!mongoose.Types.ObjectId.isValid(diaryId)) {
+            res.status(400).json({ message: 'Invalid diary ID.' });
+            return;
+        }
+
+        const diary = await Diary.findById(diaryId);
+        if (!diary) {
+            res.status(404).json({ message: 'Diary not found.' });
+            return;
+        }
+        if (!userId) {
+            res.status(401).json({ message: 'User not authenticated.' });
+            return;
+        }
+        next();
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to delete diary', error: 'Internal server error' });
     }
-
-    if (!mongoose.Types.ObjectId.isValid(diaryId)) {
-      res.status(400).json({ message: 'Invalid diary ID.' });
-      return;
-    }
-
-    const diary = await Diary.findById(diaryId);
-    if (!diary) {
-      res.status(404).json({ message: 'Diary not found.' });
-      return;
-    }
-
-    if (diary.user.toString() !== userId.toString()) {
-      res.status(403).json({ message: 'Not authorized to delete this diary.' });
-      return;
-    }
-
-    next(); 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Internal server error.' });
-  }
 };
 
+export const validateDiaryExistance: RequestHandler = async (req, res, next) => {
+    try {
+        const diaryId = req.params._id;
 
+        if (!mongoose.Types.ObjectId.isValid(diaryId)) {
+            res.status(400).json({ message: 'Invalid diary ID.' });
+            return;
+        }
 
-export const validateUserExistence: RequestHandler = async (req, res, next) => {
-    const userId = req.params.id;
-    const isValid = mongoose.Types.ObjectId.isValid(userId);
-    const user = isValid ? await User.findById(userId) : null;
-
-    if (!user) {
-        res.status(404).send({
-            message: 'Diarys retrieval failed',
-            error: 'User not found.'
-        });
-        return;
+        const diary = await Diary.findById(diaryId);
+        if (!diary) {
+            res.status(404).json({ message: 'Diary not found.' });
+            return;
+        }
     }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to find diary', error: 'Internal server error' });
 
+    }
     next();
 };
-
-
 

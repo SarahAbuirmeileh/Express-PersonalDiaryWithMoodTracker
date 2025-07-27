@@ -40,9 +40,7 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
 
   const isValidId = mongoose.Types.ObjectId.isValid(id);
   const mood = isValidId ? await Mood.findById(id) : null;
-  if (!moodData.name && !moodData.emoji && !moodData.color) {
-    throw new CustomError('At least one field is required to update', 400);
-  }
+
   if (!mood) {
     res.status(404).send({
       message: 'Updating mood failed',
@@ -50,6 +48,11 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
     });
     return;
   }
+
+  if (!moodData.name && !moodData.emoji && !moodData.color) {
+    throw new CustomError('At least one field is required to update', 400);
+  }
+
 
   if (moodData.name) {
     const existingMood = await Mood.findOne({ name: moodData.name });
