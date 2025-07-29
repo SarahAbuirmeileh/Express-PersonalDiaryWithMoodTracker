@@ -10,7 +10,12 @@ import { authenticate } from './middlewares/auth/authenticate.js';
 const app = express();
 const port: number = 3000;
 
-app.use(cors());
+app.use(
+  cors({
+    // origin: "http://localhost:5173",
+    credentials: true, 
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 

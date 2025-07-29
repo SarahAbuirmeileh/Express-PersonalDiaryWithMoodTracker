@@ -9,7 +9,9 @@ const authenticate = async (
     next: express.NextFunction
 ) => {
 
-    const token = req.cookies[COOKIE_NAME] || '';
+    const tokenFromCookie = req.cookies[COOKIE_NAME];
+    const tokenFromHeader = req.headers.authorization?.split(" ")[1];
+    const token = tokenFromCookie || tokenFromHeader || "";
     let tokenIsValid: JwtPayload | null | string;
 
     try {
