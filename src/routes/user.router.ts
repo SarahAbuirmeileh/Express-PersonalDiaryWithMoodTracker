@@ -36,7 +36,7 @@ router.post('/login', validateUserLogin, (req: NSUser.IUserCreateRequest, res: e
       const { password, __v, ...data } = dataObj.user;
       res.status(201).send({
         message: "User logged in successfully!",
-        data: data
+        data: { ...data, token: dataObj.token }
       });
     })
     .catch(err => {
