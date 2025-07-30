@@ -1,13 +1,28 @@
 import { RequestHandler } from 'express';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import User from '../../db/models/user.js';
 import { Diary } from '../../db/index.js';
-import { NSDiary } from '../../@types/diary.type.js';
 import { CustomError } from '../../utils/CustomError.js';
 
 export const validateDiaryCreation: RequestHandler = async (req, res, next) => {
     const diary = req.body || {};
     const errorList: string[] = [];
+
+    if (!diary.user) {
+        res.status(401).send({
+            massage: "Diary creation failed",
+            error: "User should be sent"
+        })
+    }
+
+    const user = User.findById({ _id: diary.user });
+    if(!user){
+        res.status(404).send({
+            massage: "Diary creation failed",
+            error: "User not found"
+        })
+    }
+
     if (!diary.title && !diary.mood && !diary.tags && !diary.images && !diary.audio && !diary.notes) {
         errorList.push('At least one field is required to create');
     }

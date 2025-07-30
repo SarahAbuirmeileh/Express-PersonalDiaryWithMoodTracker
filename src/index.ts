@@ -37,9 +37,10 @@ app.get('/', (req: express.Request, res: express.Response) => {
 });
 
 // Catch all unmatched routes
-app.all('*', (req: express.Request, res: express.Response) => {
+app.all(/.*/, (req: express.Request, res: express.Response) => {
   res.status(404).send('Not found!');
 });
+
 
 app.listen(port, () => {
   console.log(`Express app listening on port ${port}`);

@@ -20,8 +20,8 @@ router.post("/", authenticate, (req: express.Request, res: express.Response) => 
     .catch((err: any) => {
       console.error("Error adding color:", err);
       const status = err.status || 500;
-      const errorMessage =
-        status === 500 ? "Internal server error" : err.message || "Failed to add color";
+      const errorMessage = status === 500 ? "Internal server error" : err.message || "Failed to add color";
+
       res.status(status).send({
         message: "Failed to add color",
         error: errorMessage,
@@ -40,8 +40,8 @@ router.get("/", (req: express.Request, res: express.Response) => {
     .catch((err: any) => {
       console.error("Error listing colors:", err);
       const status = err.status || 500;
-      const errorMessage =
-        status === 500 ? "Internal server error" : err.message || "Failed to fetch colors";
+      const errorMessage = status === 500 ? "Internal server error" : err.message || "Failed to fetch colors";
+
       res.status(status).send({
         message: "Failed to fetch colors",
         error: errorMessage,
@@ -60,8 +60,8 @@ router.put("/:id", authenticate, (req: express.Request, res: express.Response) =
     .catch((err: any) => {
       console.error("Error updating color:", err);
       const status = err.status || 500;
-      const errorMessage =
-        status === 500 ? "Internal server error" : err.message || "Failed to update color";
+      const errorMessage = status === 500 ? "Internal server error" : err.message || "Failed to update color";
+
       res.status(status).send({
         message: "Failed to update color",
         error: errorMessage,
@@ -79,8 +79,8 @@ router.delete("/:id", authenticate, (req: express.Request, res: express.Response
     .catch((err: any) => {
       console.error("Error deleting color:", err);
       const status = err.status || 500;
-      const errorMessage =
-        status === 500 ? "Internal server error" : err.message || "Failed to delete color";
+      const errorMessage = status === 500 ? "Internal server error" : err.message || "Failed to delete color";
+     
       res.status(status).send({
         message: "Failed to delete color",
         error: errorMessage,

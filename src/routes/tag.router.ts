@@ -17,6 +17,7 @@ router.post('/', validateTagCreation, (req: NSTag.ITagCreateRequest, res: expres
 
   }).catch(err => {
     console.error("Error in adding tag: ", err);
+    
     res.status(500).send({
       message: "Failed to add tag",
       error: "Internal Server Error"
