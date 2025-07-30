@@ -1,4 +1,4 @@
-import Quote from "../db/models/quote";
+import Quote from "../db/models/quote.js";
 import { CustomError } from "../utils/CustomError.js";
 import { NSQuote } from "../@types/quote.type.js";
 

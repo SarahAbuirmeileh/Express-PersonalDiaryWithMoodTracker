@@ -1,8 +1,6 @@
 import Diary from '../db/models/diary.js';
 import { NSDiary } from '../@types/diary.type.js';
 import { CustomError } from '../utils/CustomError.js';
-import Tag from '../db/models/tag.js';
-import mongoose, { ObjectId } from 'mongoose';
 
 const createDiary = async (payload: NSDiary.IDiary) => {
     try {
@@ -55,10 +53,10 @@ const deleteDiary = async (id: string) => {
 };
 
 
-const getDiariesForUser = async (userId: mongoose.Types.ObjectId) => {
+const getDiariesForUser = async (userId: string) => {
     try {
         const diaries = await Diary.find({
-            userId
+            user: userId
         });
         return diaries.map(diary => diary.toObject());
 

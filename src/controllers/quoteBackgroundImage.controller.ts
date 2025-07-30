@@ -1,5 +1,5 @@
-import QuoteBackgroundImage from "../db/models/quoteBackgroundImage";
-import { CustomError } from "../utils/CustomError";
+import QuoteBackgroundImage from "../db/models/quoteBackgroundImage.js";
+import { CustomError } from "../utils/CustomError.js";
 
 const getAllQuoteBgImages = async () => {
   try {
