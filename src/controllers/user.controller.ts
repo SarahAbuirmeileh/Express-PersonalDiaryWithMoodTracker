@@ -37,7 +37,7 @@ const createUser = async (payload: NSUser.IUser) => {
 };
 
 const login = async (email: string, password: string) => {
-  
+
   let user;
   try {
     user = await User.findOne({
@@ -83,28 +83,64 @@ const getUserById = async (id: string) => {
 
 const updateUser = async (id: string, data: Partial<NSUser.IUser>) => {
   try {
+    const user = await User.findById(id);
 
-    if (data.password) {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
-      data.password = hashedPassword;
+    if (user) {
+      if (data.name) user.name = data.name;
+      if (data.email) user.email = data.email;
+      if (data.imageURL) user.imageURL = data.imageURL;
+
+      if (data.password) {
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        user.password = hashedPassword;
+      }
+
+      if (data.moods) {
+        for (const [mood, emoji] of Object.entries(data.moods)) {
+          if (emoji) {
+            user.customMoodEmojis.set(mood, emoji);
+          }
+        }
+      }
+
+      await user.save();
+      
+      const { password, __v, ...userData } = user;
+      return userData;
     }
-
-    const updatedUser = await User.findByIdAndUpdate(id, data, {
-      new: true,
-      runValidators: true,
-    }).select("-password -__v");
-
-    if (!updatedUser) {
-      throw new CustomError("User not found", 404);
-    }
-
-    return updatedUser;
   } catch (err) {
     console.error("Error updating user:", err);
-    if (err instanceof CustomError) throw err;
     throw new CustomError("Error updating user", 500);
   }
 };
+
+// interface ICustomizeUserEmojis {
+//   delighted?: string;
+//   happy?: string;
+//   neutral?: string;
+//   sad?: string;
+//   miserable?: string;
+// }
+
+// const customizeUserEmojis = async (userId: string, payload: ICustomizeUserEmojis) => {
+//   try {
+//     const user = await User.findById(userId);
+
+//     if (user) {
+//       Object.entries(payload).forEach(([mood, emoji]) => {
+//         if (emoji) {
+//           user.customMoodEmojis.set(mood, emoji);
+//         }
+//       });
+
+//       await user.save();
+//       return user.toObject();
+//     }
+//   } catch (err) {
+//     console.error("Error customizing user emojis: ", err);
+//     throw new CustomError("Error customizing user emojis", 500);
+//   }
+// };
 
 const deleteUser = async (id: string) => {
   try {

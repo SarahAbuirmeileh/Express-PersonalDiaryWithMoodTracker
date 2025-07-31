@@ -108,22 +108,3 @@ export const validateMoodDeletion: RequestHandler = async (req, res, next) => {
 
   next();
 };
-
-export const validateUserExistence: RequestHandler = async (req, res, next) => {
-  const userId = req.params.id;
-  const isValid = mongoose.Types.ObjectId.isValid(userId);
-  const user = isValid ? await User.findById(userId) : null;
-
-  if (!user) {
-    res.status(404).send({
-      message: 'Moods retrieval failed',
-      error: 'User not found.'
-    });
-    return;
-  }
-
-  next();
-};
-
-
-
