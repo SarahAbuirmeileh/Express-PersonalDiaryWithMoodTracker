@@ -122,6 +122,21 @@ const validateTagDeletion = async (req: express.Request, res: express.Response, 
     }
 };
 
+const validateTagExistence = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const id = req.params.id;
+    const isValid = mongoose.Types.ObjectId.isValid(id);
+    const tag = isValid ? await Tag.findById(id) : null; 
+
+    if (!tag) {
+        res.status(404).send({
+            message: 'Fetching tag failed',
+            error: 'Tag not found.'
+        });
+    } else {
+        next();
+    }
+};
+
 const validateUserExistence = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userId = req.params.id;
     const isValid = mongoose.Types.ObjectId.isValid(userId);
@@ -141,5 +156,6 @@ export {
     validateTagCreation,
     validateTagUpdate,
     validateTagDeletion,
-    validateUserExistence
+    validateUserExistence,
+    validateTagExistence
 }

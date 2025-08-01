@@ -48,8 +48,14 @@ const checkTagOwnership = async (
             });
         }
 
-        if (res.locals.user && res.locals.user.id == tag.user?.toString()) {
+        if (tag.type === "global") {
             return next();
+        }
+
+        if (tag.type === "custom") {
+            if (res.locals.user && res.locals.user.id == tag.user?.toString()) {
+                return next();
+            }
         }
 
         return res.status(403).json({

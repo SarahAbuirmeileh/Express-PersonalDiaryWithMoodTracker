@@ -63,6 +63,19 @@ const deleteTag = async (tagId: string) => {
     }
 }
 
+const getTagById = async (tagId: string) => {
+    try {
+        const tag = await Tag.findById({ _id: tagId });
+        return tag;
+    } catch (err) {
+
+        const error = new CustomError('Error deleting tag', 500);
+        console.error("Error deleting tag: ", err);
+
+        throw error;
+    }
+}
+
 const getTagsForUser = async (userId: string) => {
     try {
         const tags = await Tag.find({
@@ -86,5 +99,6 @@ export {
     createTag,
     updateTag,
     deleteTag,
-    getTagsForUser
+    getTagsForUser,
+    getTagById
 }
