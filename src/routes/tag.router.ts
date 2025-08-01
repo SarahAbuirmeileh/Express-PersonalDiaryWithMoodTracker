@@ -1,6 +1,6 @@
 import express from 'express';
-import { createTag, deleteTag, getTagsForUser, updateTag } from '../controllers/tag.controller.js';
-import { validateTagCreation, validateTagDeletion, validateTagUpdate, validateUserExistence } from '../middlewares/validation/tag.js';
+import { createTag, deleteTag, getTagById, getTagsForUser, updateTag } from '../controllers/tag.controller.js';
+import { validateTagCreation, validateTagDeletion, validateTagExistence, validateTagUpdate, validateUserExistence } from '../middlewares/validation/tag.js';
 import { NSTag } from '../@types/tag.type.js';
 import { authorize } from '../middlewares/auth/authorize.js';
 
@@ -17,7 +17,7 @@ router.post('/', validateTagCreation, (req: NSTag.ITagCreateRequest, res: expres
 
   }).catch(err => {
     console.error("Error in adding tag: ", err);
-    
+
     res.status(500).send({
       message: "Failed to add tag",
       error: "Internal Server Error"
@@ -37,6 +37,24 @@ router.put('/:id', authorize("TagOwnership"), validateTagUpdate, (req: NSTag.ITa
     console.error("Error in updating tag: ", err);
     res.status(500).send({
       message: "Failed to update tag",
+      error: "Internal Server Error"
+    });
+  });
+
+});
+
+router.get('/:id', validateTagExistence, (req: express.Request, res: express.Response) => {
+  const id = req.params.id;
+
+  getTagById(id).then((data) => {
+    res.status(200).send({
+      message: "Tag fetched successfully!",
+      data
+    });
+  }).catch(err => {
+    console.error("Error in fetching tag: ", err);
+    res.status(500).send({
+      message: "Failed to fetched tag",
       error: "Internal Server Error"
     });
   });

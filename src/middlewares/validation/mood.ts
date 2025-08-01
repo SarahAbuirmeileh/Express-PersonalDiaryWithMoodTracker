@@ -2,16 +2,15 @@ import { RequestHandler } from 'express';
 import mongoose, { ObjectId } from 'mongoose';
 import User from '../../db/models/user.js';
 import { Mood } from '../../db/index.js';
-import { NSMood } from '../../@types/mood.type.js';
 import { CustomError } from '../../utils/CustomError.js';
 
 export const validateMoodCreation: RequestHandler = async (req, res, next) => {
   const mood = req.body || {};
   const errorList: string[] = [];
 
-  const requiredFields = ["name", "emoji", "color"];
+  const requiredFields = ["name", "emoji", "color", "score"];
   requiredFields.forEach((field) => {
-    if (!mood[field]) {
+    if (!mood[field] && mood[field] != 0) {
       errorList.push(`${field} is required.`);
     }
   });
@@ -21,6 +20,10 @@ export const validateMoodCreation: RequestHandler = async (req, res, next) => {
     if (existingMood) {
       errorList.push('Mood with this name already exists.');
     }
+  }
+
+  if (mood.score < 0 || mood.score > 4) {
+    errorList.push('Mood score should be between 0-4');
   }
 
   if (errorList.length) {
@@ -49,14 +52,13 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
     return;
   }
 
-  if (!moodData.name && !moodData.emoji && !moodData.color) {
+  if (!moodData.name && !moodData.emoji && !moodData.color && moodData.score) {
     res.status(400).send({
       message: 'Updating mood failed',
       error: 'At least one field is required to update'
     });
     return;
   }
-
 
   if (moodData.name) {
     const existingMood = await Mood.findOne({ name: moodData.name });
@@ -69,6 +71,15 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
     }
   }
 
+  if (moodData.score) {
+    if (moodData.score < 0 || moodData.score > 4) {
+      res.status(400).send({
+        message: 'Updating mood failed',
+        error: 'Mood score should be between 0-4'
+      });
+      return;
+    }
+  }
 
   if (!moodData.user) {
     res.status(400).send({
@@ -82,13 +93,12 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
   const user = isValidUser ? await User.findById(moodData.user) : null;
 
   if (!user) {
-    res.status(400).send({
+    res.status(404).send({
       message: 'Updating mood failed',
       error: 'User does not exist.'
     });
     return;
   }
-
 
   next();
 };
@@ -108,22 +118,3 @@ export const validateMoodDeletion: RequestHandler = async (req, res, next) => {
 
   next();
 };
-
-export const validateUserExistence: RequestHandler = async (req, res, next) => {
-  const userId = req.params.id;
-  const isValid = mongoose.Types.ObjectId.isValid(userId);
-  const user = isValid ? await User.findById(userId) : null;
-
-  if (!user) {
-    res.status(404).send({
-      message: 'Moods retrieval failed',
-      error: 'User not found.'
-    });
-    return;
-  }
-
-  next();
-};
-
-
-

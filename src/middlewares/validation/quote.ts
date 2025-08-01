@@ -77,6 +77,7 @@ const validateQutoeUpdate = async (
 
   next();
 };
+
 const validateQuoteDeletion = async (
   req: express.Request,
   res: express.Response,

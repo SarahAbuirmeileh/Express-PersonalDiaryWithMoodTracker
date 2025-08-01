@@ -7,6 +7,13 @@ export namespace NSUser {
         email: string;
         password: string;
         imageURL?: string;
+        moods: {
+            delighted?: string;
+            happy?: string;
+            neutral?: string;
+            sad?: string;
+            miserable?: string;
+        };
     }
 
     export interface IUserCreateRequest extends express.Request<{}, {}, NSUser.IUser, {}> { }

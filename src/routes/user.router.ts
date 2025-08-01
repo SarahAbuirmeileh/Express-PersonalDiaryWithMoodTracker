@@ -80,7 +80,7 @@ router.get("/:id", authenticate, authorize("userOwnership"), (req: express.Reque
 router.put("/:id", authenticate, authorize("userOwnership"), validateUserUpdate, (req: express.Request, res: express.Response) => {
   const userId = req.params.id;
   updateUser(userId, req.body)
-    .then((user) => {
+  .then((user) => {
       res.status(200).send({
         message: "User updated successfully!",
         data: user,
