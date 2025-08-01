@@ -3,6 +3,7 @@ import * as EmailValidator from 'email-validator';
 import { isValidPassword } from '../../utils/validation.js';
 import User from '../../db/models/user.js';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
 const validateUserCreation = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const user = req.body || {};
@@ -62,7 +63,9 @@ const validateUserUpdate = async (req: express.Request, res: express.Response, n
   const errorList: string[] = [];
   const userId = req.params.id;
 
-  const user = await User.findById(userId);
+  const isValidId = mongoose.Types.ObjectId.isValid(userId);
+  const user = isValidId ? await User.findById(userId) : null;
+
   if (!user) {
     res.status(404).send({
       massage: "Failed to update user",

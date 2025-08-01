@@ -11,12 +11,13 @@ import {
   validateDiaryCreation,
   validateDiaryDeletion,
   validateDiaryUpdate,
-  validateDiaryExistance,
+  validateDiaryExistence,
 } from "../middlewares/validation/diary.js";
 import { authorize } from "../middlewares/auth/authorize.js";
 import { NSDiary } from "../@types/diary.type.js";
 import mongoose from "mongoose";
 import { authenticate } from "../middlewares/auth/authenticate.js";
+import { validateUserExistence } from "../middlewares/validation/tag.js";
 
 
 const router = express.Router();
@@ -77,7 +78,7 @@ router.delete("/:id", authenticate, authorize("diaryOwnership"), validateDiaryDe
   }
 });
 
-router.get("/:id", authenticate, validateDiaryExistance, async (req, res) => {
+router.get("/:id", authenticate, validateDiaryExistence, async (req, res) => {
   try {
     const diary = await getDiaryByID(req.params.id);
 
@@ -113,9 +114,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/user/:id", authenticate, async (req, res) => {
+router.get("/user/:id", authenticate, validateUserExistence, async (req, res) => {
   try {
-    const userId = new mongoose.Types.ObjectId(req.params.id);
     const diaries = await getDiariesForUser(req.params.id);
 
     if (!diaries || diaries.length === 0) {
@@ -132,7 +132,7 @@ router.get("/user/:id", authenticate, async (req, res) => {
     });
   } catch (err) {
     console.error("Error getting user diaries:", err);
-    
+
     res.status(500).send({
       message: "Failed to get user diaries",
       error: "Internal Server Error",

@@ -93,7 +93,7 @@ export const validateMoodUpdate: RequestHandler = async (req, res, next) => {
   const user = isValidUser ? await User.findById(moodData.user) : null;
 
   if (!user) {
-    res.status(400).send({
+    res.status(404).send({
       message: 'Updating mood failed',
       error: 'User does not exist.'
     });

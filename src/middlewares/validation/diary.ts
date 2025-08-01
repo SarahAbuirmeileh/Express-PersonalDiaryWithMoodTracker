@@ -125,30 +125,22 @@ export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
     next();
 };
 
-
 export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
     try {
         const diaryId = req.params._id;
         const userId = req.user?._id;
 
+        const isValidId = !mongoose.Types.ObjectId.isValid(diaryId);
 
-
-        if (!mongoose.Types.ObjectId.isValid(diaryId)) {
-            res.status(400).send({
-                message: "Deleting diary failed",
-                error: "Invalid diary ID."
-            });
-            return;
-        }
-
-        const diary = await Diary.findById(diaryId);
+        const diary = isValidId ? await Diary.findById(diaryId) : null;
         if (!diary) {
             res.status(404).send({
                 message: "Deleting diary failed",
-                error: "Dirary Not Found."
+                error: "Diary not found."
             });
             return;
         }
+
         if (!userId) {
             res.status(401).send({
                 message: "Deleting diary failed",
@@ -156,6 +148,17 @@ export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
             });
             return;
         }
+        const isValidUserId = mongoose.Types.ObjectId.isValid(userId);
+        const user = isValidUserId ? await User.findById(isValidUserId) : null;
+
+        if (!user) {
+            res.status(404).send({
+                message: "Deleting diary failed",
+                error: "User not found."
+            });
+            return;
+        }
+
         next();
     } catch (err) {
         console.error(err);
@@ -164,18 +167,12 @@ export const validateDiaryDeletion: RequestHandler = async (req, res, next) => {
 };
 
 
-export const validateDiaryExistance: RequestHandler = async (req, res, next) => {
+export const validateDiaryExistence: RequestHandler = async (req, res, next) => {
     try {
         const diaryId = req.params._id;
 
-        if (!mongoose.Types.ObjectId.isValid(diaryId)) {
-            res.status(400).send({
-                message: "Invalid diary",
-                error: "Invalid diary ID."
-            });
-            return;
-        }
-        const diary = await Diary.findById(diaryId);
+        const isValidId = mongoose.Types.ObjectId.isValid(diaryId);
+        const diary = isValidId ? await Diary.findById(diaryId) : null;
         if (!diary) {
             res.status(400).send({
                 message: "Diary not found",
