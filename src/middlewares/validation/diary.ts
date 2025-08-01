@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import User from '../../db/models/user.js';
-import { Diary } from '../../db/index.js';
+import { Diary, Tag } from '../../db/index.js';
 import { CustomError } from '../../utils/CustomError.js';
 
 export const validateDiaryCreation: RequestHandler = async (req, res, next) => {
@@ -13,18 +13,33 @@ export const validateDiaryCreation: RequestHandler = async (req, res, next) => {
             massage: "Diary creation failed",
             error: "User should be sent"
         })
+        return;
     }
 
     const user = User.findById({ _id: diary.user });
-    if(!user){
+    if (!user) {
         res.status(404).send({
             massage: "Diary creation failed",
             error: "User not found"
         })
+        return;
     }
 
     if (!diary.title && !diary.mood && !diary.tags && !diary.images && !diary.audio && !diary.notes) {
         errorList.push('At least one field is required to create');
+    }
+
+    if (diary.tags && diary.tags.length !== 0) {
+        const tags: string[] = diary.tags;
+
+        tags.forEach((tag: string) => {
+            const isValidId = mongoose.Types.ObjectId.isValid(tag);
+            const tagDoc = isValidId ? Tag.findById(tag) : null;
+
+            if (!tagDoc) {
+                errorList.push(`Tag not found`);
+            }
+        })
     }
 
     if (errorList.length) {
@@ -74,6 +89,21 @@ export const validateDiaryUpdate: RequestHandler = async (req, res, next) => {
         return;
     }
 
+    if (diary.tags && diary.tags.length !== 0) {
+        const tags = diary.tags;
+
+        tags.forEach((tag) => {
+            const isValidId = mongoose.Types.ObjectId.isValid(tag);
+            const tagDoc = isValidId ? Tag.findById(tag) : null;
+
+            if (!tagDoc) {
+                res.status(404).send({
+                    message: 'Updating diary failed',
+                    error: 'Tag not found'
+                });
+            }
+        })
+    }
 
     next();
 };
