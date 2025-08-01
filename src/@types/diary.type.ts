@@ -6,13 +6,14 @@ export namespace NSDiary {
 
     export interface IDiary {
         _id: mongoose.Types.ObjectId;
+        user?: mongoose.Types.ObjectId;
         date: number;
         title: string;
         tags: string[];
         notes?: string[];
         mood: number;
-        image?: string[];
-        audio?: string[];
+        images?: string[];
+        audios?: string[];
     }
 
     export interface IDiaryCreateRequest extends express.Request<{}, {}, IDiary, {}> { }
