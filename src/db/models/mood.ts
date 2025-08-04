@@ -14,6 +14,10 @@ const MoodSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    score:{
+        type:Number,
+        require:true,
+    }
 });
 
 const Mood = mongoose.model('Mood', MoodSchema);

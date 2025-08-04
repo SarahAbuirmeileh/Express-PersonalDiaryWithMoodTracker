@@ -24,6 +24,18 @@ const UserSchema = new mongoose.Schema({
             ref: 'Diary',
         }
     ],
+    customMoodEmojis: {
+        type: Map,
+        of: String,
+        default: () => ({
+            delighted: "face-grin-hearts",
+            happy: "face-smile-beam",
+            neutral: "face-smile",
+            sad: "face-frown",
+            miserable: "face-sad-cry",
+        }),
+        require: false,
+    },
 });
 
 const User = mongoose.model('User', UserSchema);

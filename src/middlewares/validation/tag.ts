@@ -29,7 +29,9 @@ const validateTagCreation = async (req: express.Request, res: express.Response, 
         if (!tag.user) {
             errorList.push('user is required when type is custom.');
         } else {
-            const userExists = await User.findById(tag.user);
+            const isValidUserId = mongoose.Types.ObjectId.isValid(tag.user);
+            const userExists = isValidUserId ? await User.findById(tag.user) : null;
+
             if (!userExists) {
                 errorList.push('User does not exist.');
             }
@@ -95,7 +97,7 @@ const validateTagUpdate = async (req: express.Request, res: express.Response, ne
             const user = isValid ? await User.findById(tagData.user) : null;
 
             if (!user) {
-                res.status(400).send({
+                res.status(404).send({
                     message: 'Updating tag failed',
                     error: 'User does not exist.'
                 });
@@ -110,7 +112,7 @@ const validateTagUpdate = async (req: express.Request, res: express.Response, ne
 const validateTagDeletion = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = req.params.id;
     const isValid = mongoose.Types.ObjectId.isValid(id);
-    const tag = isValid ? await Tag.findById(id) : null; 
+    const tag = isValid ? await Tag.findById(id) : null;
 
     if (!tag) {
         res.status(404).send({
@@ -122,10 +124,25 @@ const validateTagDeletion = async (req: express.Request, res: express.Response, 
     }
 };
 
+const validateTagExistence = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const id = req.params.id;
+    const isValid = mongoose.Types.ObjectId.isValid(id);
+    const tag = isValid ? await Tag.findById(id) : null;
+
+    if (!tag) {
+        res.status(404).send({
+            message: 'Fetching tag failed',
+            error: 'Tag not found.'
+        });
+    } else {
+        next();
+    }
+};
+
 const validateUserExistence = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userId = req.params.id;
     const isValid = mongoose.Types.ObjectId.isValid(userId);
-    const user = isValid ? await User.findById(userId) : null;      
+    const user = isValid ? await User.findById(userId) : null;
 
     if (!user) {
         res.status(404).send({
@@ -141,5 +158,6 @@ export {
     validateTagCreation,
     validateTagUpdate,
     validateTagDeletion,
-    validateUserExistence
+    validateUserExistence,
+    validateTagExistence
 }
