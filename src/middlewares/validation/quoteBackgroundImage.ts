@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import { QuoteBackgroundImage } from "../../db/index.js";
 
+const allowedThemes = ["yellow", "green", "purple"];
+
 const validateBgImageCreation = (
   req: express.Request,
   res: express.Response,
@@ -24,11 +26,14 @@ const validateBgImageCreation = (
     });
     return;
   }
-  if (!theme || typeof theme !== "string") {
-    return res.status(400).json({
+  if (!theme || !allowedThemes.includes(theme)) {
+    res.status(400).json({
       message: "Invalid request",
-      error: "theme is required and must be a string",
+      error: `theme is required and must be one of: ${allowedThemes.join(
+        ", "
+      )}`,
     });
+    return;
   }
 
   next();
@@ -53,18 +58,19 @@ const validateBgImageUpdate = async (
     return;
   }
 
-  if (backgroundImage && typeof backgroundImage !== "string") {
+  if (typeof backgroundImage !== "string") {
     res.status(400).json({
       message: "Invalid request",
       error: "backgroundImage must be a string",
     });
     return;
   }
-  if (theme && typeof theme !== "string") {
-    return res.status(400).json({
+  if (!allowedThemes.includes(theme)) {
+    res.status(400).json({
       message: "Invalid request",
-      error: "theme must be a string",
+      error: `theme must be one of: ${allowedThemes.join(", ")}`,
     });
+    return;;
   }
 
   next();
