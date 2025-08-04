@@ -4,11 +4,8 @@ import { NSQuoteColor } from "../@types/quoteColor.types.js";
 
 const addColor = async (payload: NSQuoteColor.IQuoteColorPayload) => {
   try {
-    if (!payload.backgroundColor || !payload.textColor) {
-      throw new CustomError(
-        "Both backgroundColor and textColor are required",
-        400
-      );
+    if (!payload.backgroundColor || !payload.theme) {
+      throw new CustomError("Both backgroundColor and theme are required", 400);
     }
 
     const newColor = new QuoteBackgroundColor(payload);
@@ -33,7 +30,10 @@ const listColors = async () => {
   }
 };
 
-const updateColor = async (id: string, data: NSQuoteColor.IQuoteColorUpdate) => {
+const updateColor = async (
+  id: string,
+  data: NSQuoteColor.IQuoteColorUpdate
+) => {
   try {
     const updatedColor = await QuoteBackgroundColor.findByIdAndUpdate(
       id,

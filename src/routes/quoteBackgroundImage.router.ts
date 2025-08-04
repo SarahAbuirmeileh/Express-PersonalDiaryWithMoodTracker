@@ -32,11 +32,17 @@ router.get("/", async (req: express.Request, res: express.Response) => {
   }
 });
 
-router.post("/", authenticate, validateBgImageCreation, async (req: express.Request, res: express.Response) => {
-  try {
-    const { backgroundImage } = req.body;
-    const newImage = await createQuoteBgImage(backgroundImage);
-    const { __v, ...data } = newImage;
+
+router.post(
+  "/",
+  authenticate,
+  validateBgImageCreation,
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const { backgroundImage, theme } = req.body;
+      const newImage = await createQuoteBgImage(backgroundImage, theme);
+      const { __v, ...data } = newImage;
+
 
     res.status(201).json({
       message: "Background image added successfully!",
@@ -51,13 +57,19 @@ router.post("/", authenticate, validateBgImageCreation, async (req: express.Requ
   }
 });
 
-router.put("/:id", authenticate, validateBgImageUpdate, async (req: express.Request, res: express.Response) => {
-  try {
-    const { backgroundImage } = req.body;
-    const id = req.params.id;
 
-    const updated = await updateQuoteBgImage(id, backgroundImage);
-    const { __v, ...data } = updated;
+router.put(
+  "/:id",
+  authenticate,
+  validateBgImageUpdate,
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const { backgroundImage, theme } = req.body;
+      const id = req.params.id;
+
+      const updated = await updateQuoteBgImage(id, backgroundImage, theme);
+      const { __v, ...data } = updated;
+
 
     res.status(200).json({
       message: "Background image updated successfully!",

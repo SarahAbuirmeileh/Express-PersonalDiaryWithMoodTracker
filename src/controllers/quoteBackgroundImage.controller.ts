@@ -11,9 +11,12 @@ const getAllQuoteBgImages = async () => {
   }
 };
 
-const createQuoteBgImage = async (imageUrl: string) => {
+const createQuoteBgImage = async (imageUrl: string, theme: string) => {
   try {
-    const image = new QuoteBackgroundImage({ backgroundImage: imageUrl });
+    const image = new QuoteBackgroundImage({
+      backgroundImage: imageUrl,
+      theme: theme,
+    });
     await image.save();
     return image.toObject();
   } catch (err) {
@@ -22,12 +25,17 @@ const createQuoteBgImage = async (imageUrl: string) => {
   }
 };
 
-const updateQuoteBgImage = async (id: string, newUrl: string) => {
+const updateQuoteBgImage = async (
+  id: string,
+  newUrl: string,
+  theme: string
+) => {
   try {
     const image = await QuoteBackgroundImage.findById(id);
     if (!image) throw new CustomError("Background image not found", 404);
 
     image.backgroundImage = newUrl;
+    image.theme = theme;
     await image.save();
     return image.toObject();
   } catch (err) {
