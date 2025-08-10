@@ -8,7 +8,7 @@ const QuoteBackgroundImageSchema = new mongoose.Schema({
   theme: {
     type: String,
     required: true,
-    enum: ["yellow", "green", "purple"],
+    enum: ["green", "purple"],
   },
 });
 
