@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { QuoteBackgroundImage } from "../../db/index.js";
 
-const allowedThemes = ["yellow", "green", "purple"];
+const allowedThemes = ["green", "purple"];
 
 const validateBgImageCreation = (
   req: express.Request,
@@ -26,10 +26,17 @@ const validateBgImageCreation = (
     });
     return;
   }
-  if (!theme || !allowedThemes.includes(theme)) {
+  if (!theme) {
     res.status(400).json({
       message: "Invalid request",
-      error: `theme is required and must be one of: ${allowedThemes.join(
+      error: "theme is required ",
+    });
+    return;
+  }
+  if (!allowedThemes.includes(theme)) {
+    res.status(400).json({
+      message: "Invalid request",
+      error: `theme must be one of: ${allowedThemes.join(
         ", "
       )}`,
     });
