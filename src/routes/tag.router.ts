@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/', validateTagCreation, (req: NSTag.ITagCreateRequest, res: express.Response) => {
   createTag(req.body).then(dataObj => {
 
-    const { __v, ...data } = dataObj;
+    const { ...data } = dataObj;
     res.status(201).send({
       message: "Tag added successfully!",
       data: data

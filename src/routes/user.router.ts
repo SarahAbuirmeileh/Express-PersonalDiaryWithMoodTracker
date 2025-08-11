@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/signup', validateUserCreation, (req: NSUser.IUserCreateRequest, res: express.Response) => {
   createUser(req.body).then(dataObj => {
 
-    const { password, __v, ...data } = dataObj;
+    const { password, ...data } = dataObj;
     res.status(201).send({
       message: "User added successfully!",
       data: data
@@ -33,7 +33,7 @@ router.post('/login', validateUserLogin, (req: NSUser.IUserCreateRequest, res: e
         sameSite: COOKIE_SAME_SITE
       });
 
-      const { password, __v, ...data } = dataObj.user;
+      const { password, ...data } = dataObj.user;
       res.status(201).send({
         message: "User logged in successfully!",
         data: {

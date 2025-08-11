@@ -38,7 +38,7 @@ router.post("/", authenticate, validateQutoeCreation,
     try {
       const payload = req.body as NSQuote.IQuote;
       const quote = await createQuote(payload);
-      const { __v, ...data } = quote;
+      const { ...data } = quote;
 
       res.status(201).json({
         message: "Quote added successfully!",

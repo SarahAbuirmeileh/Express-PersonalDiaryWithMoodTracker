@@ -41,7 +41,7 @@ router.post(
     try {
       const { backgroundImage, theme } = req.body;
       const newImage = await createQuoteBgImage(backgroundImage, theme);
-      const { __v, ...data } = newImage;
+      const {  ...data } = newImage;
 
 
     res.status(201).json({
@@ -68,7 +68,7 @@ router.put(
       const id = req.params.id;
 
       const updated = await updateQuoteBgImage(id, backgroundImage, theme);
-      const { __v, ...data } = updated;
+      const { ...data } = updated;
 
 
     res.status(200).json({

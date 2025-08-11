@@ -18,7 +18,7 @@ const router = express.Router();
 router.post('/', validateMoodCreation, async (req: NSMood.IMoodCreateRequest, res: express.Response) => {
   try {
     const mood = await createMood(req.body);
-    const { __v, ...data } = mood;
+    const { ...data } = mood;
 
     res.status(201).send({
       message: "Mood added successfully!",
