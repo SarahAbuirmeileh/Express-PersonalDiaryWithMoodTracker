@@ -1,6 +1,8 @@
 import QuoteBackgroundImage from "../db/models/quoteBackgroundImage.js";
 import { CustomError } from "../utils/CustomError.js";
 
+type ThemeType = "green" | "purple";
+
 const getAllQuoteBgImages = async () => {
   try {
     const images = await QuoteBackgroundImage.find({});
@@ -11,7 +13,7 @@ const getAllQuoteBgImages = async () => {
   }
 };
 
-const createQuoteBgImage = async (imageUrl: string, theme: string) => {
+const createQuoteBgImage = async (imageUrl: string, theme: ThemeType) => {
   try {
     const image = new QuoteBackgroundImage({
       backgroundImage: imageUrl,
@@ -28,7 +30,7 @@ const createQuoteBgImage = async (imageUrl: string, theme: string) => {
 const updateQuoteBgImage = async (
   id: string,
   newUrl: string,
-  theme: string
+  theme: ThemeType
 ) => {
   try {
     const image = await QuoteBackgroundImage.findById(id);

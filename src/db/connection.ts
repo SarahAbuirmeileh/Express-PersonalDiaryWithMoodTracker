@@ -3,13 +3,13 @@ import mongoose from 'mongoose';
 
 dotenv.config();
 
-const { DB_HOST, DB_PORT, DB_NAME } = process.env;
+const { DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS } = process.env;
 
-if (!DB_HOST || !DB_PORT || !DB_NAME) {
+if (!DB_HOST || !DB_PORT || !DB_NAME || !DB_USER || !DB_PASS) {
   throw new Error("Missing MongoDB environment variables");
 }
 
-const mongoURI = `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}?retryWrites=true&w=majority`;
 
 export const connectDB = async (): Promise<void> => {
   try {
