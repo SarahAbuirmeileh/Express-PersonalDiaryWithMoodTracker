@@ -2,12 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import { QuoteBackgroundImage } from "../../db/index.js";
 
+const allowedThemes = ["green", "purple"];
+
 const validateBgImageCreation = (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) => {
-  const { backgroundImage } = req.body;
+  const { backgroundImage, theme } = req.body;
 
   if (!backgroundImage) {
     res.status(400).json({
@@ -21,6 +23,22 @@ const validateBgImageCreation = (
     res.status(400).json({
       message: "Invalid request",
       error: "backgroundImage must be a string",
+    });
+    return;
+  }
+  if (!theme) {
+    res.status(400).json({
+      message: "Invalid request",
+      error: "theme is required ",
+    });
+    return;
+  }
+  if (!allowedThemes.includes(theme)) {
+    res.status(400).json({
+      message: "Invalid request",
+      error: `theme must be one of: ${allowedThemes.join(
+        ", "
+      )}`,
     });
     return;
   }
@@ -34,7 +52,7 @@ const validateBgImageUpdate = async (
   next: express.NextFunction
 ) => {
   const { id } = req.params;
-  const { backgroundImage } = req.body;
+  const { backgroundImage, theme } = req.body;
 
   const isValidId = mongoose.Types.ObjectId.isValid(id);
   const image = isValidId ? await QuoteBackgroundImage.findById(id) : null;
@@ -46,13 +64,6 @@ const validateBgImageUpdate = async (
     });
     return;
   }
-  if (!backgroundImage) {
-    res.status(400).json({
-      message: "Invalid request",
-      error: "backgroundImage is required ",
-    });
-    return;
-  }
 
   if (typeof backgroundImage !== "string") {
     res.status(400).json({
@@ -60,6 +71,13 @@ const validateBgImageUpdate = async (
       error: "backgroundImage must be a string",
     });
     return;
+  }
+  if (!allowedThemes.includes(theme)) {
+    res.status(400).json({
+      message: "Invalid request",
+      error: `theme must be one of: ${allowedThemes.join(", ")}`,
+    });
+    return;;
   }
 
   next();
