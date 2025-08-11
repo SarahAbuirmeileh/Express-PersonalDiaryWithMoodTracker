@@ -25,7 +25,7 @@ const router = express.Router();
 router.post("/", authenticate, validateDiaryCreation, async (req: NSDiary.IDiaryCreateRequest, res: express.Response) => {
   try {
     const diary = await createDiary(req.body);
-    const { __v, ...data } = diary;
+    const { ...data } = diary;
 
     res.status(201).send({
       message: "Diary added successfully!",
